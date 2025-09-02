@@ -3,11 +3,18 @@ import cors from 'cors';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import dotenv from 'dotenv';
-import { filterReview } from './services/reviewFilter.js';
-import { reviewRoutes } from './routes/reviews.js';
 
-// Load environment variables
+// Load environment variables FIRST - before any other imports
 dotenv.config();
+
+// Debug: Check if variables are loaded
+console.log('�� Environment check:');
+console.log('API Key exists:', !!process.env.HUGGING_FACE_API_KEY);
+console.log('Frontend URL:', process.env.FRONTEND_URL);
+console.log('Port:', process.env.PORT);
+
+// NOW import routes (remove the unused filterReview import)
+import { reviewRoutes } from './routes/reviews.js';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -15,16 +22,31 @@ const PORT = process.env.PORT || 3001;
 // Security middleware
 app.use(helmet());
 
-// CORS configuration
+// CORS configuration - Allow multiple origins for development
+const allowedOrigins = [
+  process.env.FRONTEND_URL || 'http://localhost:8000',
+  'http://localhost:8080',
+  'http://localhost:3000'
+];
+
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true
 }));
 
 // Rate limiting
 const limiter = rateLimit({
-  windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS) || 15 * 60 * 1000, // 15 minutes
-  max: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS) || 100, // limit each IP to 100 requests per windowMs
+  windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS) || 15 * 60 * 1000,
+  max: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS) || 100,
   message: 'Too many requests from this IP, please try again later.'
 });
 app.use(limiter);
@@ -64,6 +86,7 @@ app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
   console.log(`📝 Review filtering API available at http://localhost:${PORT}/api/reviews`);
   console.log(`🏥 Health check at http://localhost:${PORT}/health`);
+  console.log(`�� API Key loaded: ${process.env.HUGGING_FACE_API_KEY ? 'YES' : 'NO'}`);
 });
 
 export default app;
