@@ -131,7 +131,7 @@ export default function ReviewSubmissionForm({ universityName, onReviewSubmitted
             placeholder="Tell future students about your experience at this university..."
             value={formData.reviewText}
             onChange={(e) => handleInputChange("reviewText", e.target.value)}
-            className="min-h-[100px] resize-none"
+            className="min-h-[100px] resize-none bg-white border-gray-300 focus:border-blue-500 focus:ring-blue-500"
             maxLength={1000}
           />
           <div className="flex justify-between items-center text-sm text-gray-500">
@@ -145,12 +145,12 @@ export default function ReviewSubmissionForm({ universityName, onReviewSubmitted
           <div className="space-y-2">
             <Label htmlFor="category">Category</Label>
             <Select value={formData.category} onValueChange={(value) => handleInputChange("category", value)}>
-              <SelectTrigger>
+              <SelectTrigger className="bg-white border-gray-300 focus:border-blue-500 focus:ring-blue-500">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-white border-gray-300">
                 {REVIEW_CATEGORIES.map((category) => (
-                  <SelectItem key={category} value={category}>
+                  <SelectItem key={category} value={category} className="hover:bg-gray-50">
                     {category}
                   </SelectItem>
                 ))}
@@ -161,12 +161,12 @@ export default function ReviewSubmissionForm({ universityName, onReviewSubmitted
           <div className="space-y-2">
             <Label htmlFor="rating">Rating</Label>
             <Select value={formData.rating.toString()} onValueChange={(value) => handleInputChange("rating", parseInt(value))}>
-              <SelectTrigger>
+              <SelectTrigger className="bg-white border-gray-300 focus:border-blue-500 focus:ring-blue-500">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-white border-gray-300">
                 {[5, 4, 3, 2, 1].map((rating) => (
-                  <SelectItem key={rating} value={rating.toString()}>
+                  <SelectItem key={rating} value={rating.toString()} className="hover:bg-gray-50">
                     {rating} Star{rating !== 1 ? 's' : ''}
                   </SelectItem>
                 ))}
@@ -183,6 +183,7 @@ export default function ReviewSubmissionForm({ universityName, onReviewSubmitted
             placeholder="Enter your name (will be displayed publicly)"
             value={formData.author}
             onChange={(e) => handleInputChange("author", e.target.value)}
+            className="bg-white border-gray-300 focus:border-blue-500 focus:ring-blue-500"
             maxLength={50}
           />
         </div>
@@ -192,14 +193,14 @@ export default function ReviewSubmissionForm({ universityName, onReviewSubmitted
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <Label className="text-sm font-medium">AI Content Filter</Label>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={handleFilterReview}
-                disabled={isFiltering}
-                className="text-xs"
-              >
+                             <Button
+                 type="button"
+                 variant="outline"
+                 size="sm"
+                 onClick={handleFilterReview}
+                 disabled={isFiltering}
+                 className="text-xs"
+               >
                 {isFiltering ? (
                   <>
                     <Loader2 className="w-3 h-3 mr-1 animate-spin" />

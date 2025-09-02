@@ -78,14 +78,14 @@ const APSCalculator = ({ onAPSCalculated }: APSCalculatorProps) => {
       <CardContent className="p-6">
         <div className="grid gap-4">
           {subjects.map((subject, index) => (
-            <div key={index} className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-gray-50 rounded-lg">
+            <div key={index} className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-white border border-gray-200 rounded-lg">
               <div>
                 <Label htmlFor={`subject-${index}`}>Subject {index + 1}</Label>
                 <select
                   id={`subject-${index}`}
                   value={subject.name}
                   onChange={(e) => handleSubjectChange(index, "name", e.target.value)}
-                  className="w-full p-2 border rounded-md mt-1"
+                  className="w-full p-2 border rounded-md mt-1 bg-white border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                 >
                   <option value="">Select a subject</option>
                   {commonSubjects.map((subj) => (
@@ -103,7 +103,7 @@ const APSCalculator = ({ onAPSCalculated }: APSCalculatorProps) => {
                   value={subject.percentage}
                   onChange={(e) => handleSubjectChange(index, "percentage", e.target.value)}
                   placeholder="e.g. 85"
-                  className="mt-1"
+                  className="mt-1 bg-white border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                 />
               </div>
             </div>
