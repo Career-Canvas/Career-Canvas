@@ -1,14 +1,17 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Star, MapPin, Wifi, Car, Coffee, Heart, MessageCircle } from "lucide-react";
 import { universities, type UniversityInfo } from "@/data/universityData";
+import ReviewSubmissionForm from "./ReviewSubmissionForm";
+import { useState } from "react";
 
 const UniversitySections = () => {
+  const [showReviewForm, setShowReviewForm] = useState<string | null>(null);
+
   const handleReviewSubmit = (universityName: string) => {
-    // This would connect to backend in the future
-    alert(`Thank you for your review about ${universityName}! This feature will be available soon.`);
+    setShowReviewForm(null);
+    // You could add a success message or refresh reviews here
   };
 
   const getCategoryIcon = (category: string) => {
@@ -126,17 +129,20 @@ const UniversitySections = () => {
                       Share Your Experience
                     </h4>
                     <div className="space-y-3">
-                      <Textarea
-                        placeholder="Tell future students about your experience at this university..."
-                        className="min-h-[80px] text-sm"
-                      />
-                      <Button
-                        onClick={() => handleReviewSubmit(university.name)}
-                        className="w-full bg-red-500 hover:bg-red-600 text-white"
-                        size="sm"
-                      >
-                        Submit Review (Coming Soon)
-                      </Button>
+                      {showReviewForm === university.name ? (
+                        <ReviewSubmissionForm 
+                          universityName={university.name}
+                          onReviewSubmitted={() => handleReviewSubmit(university.name)}
+                        />
+                      ) : (
+                        <Button
+                          onClick={() => setShowReviewForm(university.name)}
+                          className="w-full bg-red-500 hover:bg-red-600 text-white"
+                          size="sm"
+                        >
+                          Submit Review
+                        </Button>
+                      )}
                     </div>
                   </div>
                 </CardContent>
