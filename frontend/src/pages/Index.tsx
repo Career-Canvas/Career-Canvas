@@ -68,7 +68,7 @@ const Index = () => {
             by combining academic requirements with authentic student experiences.
           </p>
           <div className="text-sm text-white/60">
-            <p>© 2024 Career Canvas. Built with ❤️ for South African students.</p>
+            <p>© 2025 Career Canvas. Built with ❤️ for South African students.</p>
           </div>
         </div>
       </footer>
