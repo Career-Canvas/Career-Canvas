@@ -135,6 +135,7 @@ const APSCalculator = () => {
   };
 
   return (
+
     <>
       <style>{`
         input:-webkit-autofill,
@@ -207,6 +208,7 @@ const APSCalculator = () => {
                   <option value="Life Orientation">Life Orientation</option>
                 </select>
               </div>
+
               <div>
                 <Label htmlFor="percentage-1" className="text-sm font-medium text-gray-700">Percentage</Label>
                 <Input
@@ -227,10 +229,12 @@ const APSCalculator = () => {
               <div>
                 <Label htmlFor="subject-2" className="text-sm font-medium text-gray-700">Subject 3 (Home Language)</Label>
                 <select
+
                   id="subject-2"
                   value={subjects[2].name}
                   onChange={(e) => handleSubjectChange(2, "name", e.target.value)}
                   className="w-full p-2 border border-gray-300 rounded-md mt-1 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all focus:outline-none"
+
                 >
                   <option value="">Select an option</option>
                   {homeLanguages.map((subj) => (
@@ -248,7 +252,9 @@ const APSCalculator = () => {
                   value={subjects[2].percentage}
                   onChange={(e) => handleSubjectChange(2, "percentage", e.target.value)}
                   placeholder="e.g. 85"
+
                   className="mt-1 bg-white border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none"
+
                 />
               </div>
             </div>

@@ -27,7 +27,7 @@ cp env.example .env
 HUGGING_FACE_API_KEY=your_actual_api_key_here
 PORT=3001
 NODE_ENV=development
-FRONTEND_URL=http://localhost:5173
+FRONTEND_URL=http://localhost:8000
 
 # Start the server
 npm run dev
