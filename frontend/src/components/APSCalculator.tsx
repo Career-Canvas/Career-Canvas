@@ -189,7 +189,7 @@ const APSCalculator = () => {
                   value={subjects[0].percentage}
                   onChange={(e) => handleSubjectChange(0, "percentage", e.target.value)}
                   placeholder="e.g. 85"
-                  className="mt-1 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none"
+                  className="mt-1 bg-white border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none"
                 />
               </div>
             </div>
@@ -201,7 +201,7 @@ const APSCalculator = () => {
                 <select
                   id="subject-1"
                   value={subjects[1].name}
-                  className="w-full p-2 border border-gray-300 rounded-md mt-1 focus:outline-none"
+                  className="w-full p-2 border border-gray-300 rounded-md mt-1 bg-white focus:outline-none"
                   disabled
                 >
                   <option value="Life Orientation">Life Orientation</option>
@@ -217,7 +217,7 @@ const APSCalculator = () => {
                   value={subjects[1].percentage}
                   onChange={(e) => handleSubjectChange(1, "percentage", e.target.value)}
                   placeholder="e.g. 85"
-                  className="mt-1 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none"
+                  className="mt-1 bg-white border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none"
                 />
               </div>
             </div>
@@ -248,7 +248,7 @@ const APSCalculator = () => {
                   value={subjects[2].percentage}
                   onChange={(e) => handleSubjectChange(2, "percentage", e.target.value)}
                   placeholder="e.g. 85"
-                  className="mt-1 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none"
+                  className="mt-1 bg-white border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none"
                 />
               </div>
             </div>
@@ -279,7 +279,7 @@ const APSCalculator = () => {
                   value={subjects[3].percentage}
                   onChange={(e) => handleSubjectChange(3, "percentage", e.target.value)}
                   placeholder="e.g. 85"
-                  className="mt-1 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none"
+                  className="mt-1 bg-white border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none"
                 />
               </div>
             </div>
@@ -311,7 +311,7 @@ const APSCalculator = () => {
                     value={subjects[index].percentage}
                     onChange={(e) => handleSubjectChange(index, "percentage", e.target.value)}
                     placeholder="e.g. 85"
-                    className="mt-1 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none"
+                    className="mt-1 bg-white border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none"
                   />
                 </div>
               </div>
