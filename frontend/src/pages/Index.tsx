@@ -26,7 +26,7 @@ const Index = () => {
       <CampusHero />
       
       {/* APS Calculator and Personality Test */}
-      <section className="py-16 px-4 bg-gray-50">
+      <section id="aps-calculator" className="py-16 px-4 bg-gray-50">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
             <h2 className="text-4xl font-bold text-gray-900 mb-4">
@@ -55,7 +55,7 @@ const Index = () => {
       </section>
 
       {/* University Sections */}
-      <section className="py-16 bg-gray-50">
+      <section id="university-sections" className="py-16 bg-gray-50">
         <UniversitySections />
       </section>
 
