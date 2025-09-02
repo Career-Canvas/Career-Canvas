@@ -1,210 +1,267 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
-import { Brain, Users, Lightbulb, Target, CheckCircle2 } from "lucide-react";
+import { Brain, Lightbulb, Target, CheckCircle2, ShieldAlert, Zap, Heart, Loader2 } from "lucide-react";
 import * as React from "react";
+import { Progress } from "@/components/ui/progress";
 
-interface PersonalityTestProps {
-  onPersonalityDetermined: (personalityType: string) => void;
+// Define the structure for the API response and results
+interface Question {
+  id: string;
+  text: string;
+  keyed: 'plus' | 'minus';
+  domain: 'O' | 'C' | 'E' | 'A' | 'N';
 }
 
+interface PersonalityScores {
+  O: number;
+  C: number;
+  E: number;
+  A: number;
+  N: number;
+}
+
+interface PersonalityTestProps {
+  onPersonalityDetermined: (scores: PersonalityScores) => void;
+}
+
+const domainDetails = {
+  O: {
+    name: "Openness to Experience",
+    icon: Lightbulb,
+    description: "Reflects your curiosity, creativity, and appreciation for art and new experiences. High scorers are imaginative and independent thinkers.",
+    color: "text-warm-accent"
+  },
+  C: {
+    name: "Conscientiousness",
+    icon: Target,
+    description: "Indicates your level of organization, discipline, and goal-directed behavior. High scorers are reliable, responsible, and hardworking.",
+    color: "text-success-green"
+  },
+  E: {
+    name: "Extraversion",
+    icon: Zap,
+    description: "Measures your sociability, assertiveness, and emotional expression. High scorers are outgoing, energetic, and thrive in social situations.",
+    color: "text-purple-600"
+  },
+  A: {
+    name: "Agreeableness",
+    icon: Heart,
+    description: "Shows your tendency to be compassionate and cooperative. High scorers are typically trusting, helpful, and good-natured.",
+    color: "text-academic-blue"
+  },
+  N: {
+    name: "Neuroticism",
+    icon: ShieldAlert,
+    description: "Relates to emotional stability and the tendency to experience negative emotions. High scorers may be more prone to stress and anxiety.",
+    color: "text-red-500"
+  },
+};
+
+const likertOptions = [
+  { value: 1, label: "Very Inaccurate" },
+  { value: 2, label: "Moderately Inaccurate" },
+  { value: 3, label: "Neither Accurate Nor Inaccurate" },
+  { value: 4, label: "Moderately Accurate" },
+  { value: 5, label: "Very Accurate" },
+];
+
 const PersonalityTest = ({ onPersonalityDetermined }: PersonalityTestProps) => {
-  const [answers, setAnswers] = useState<Record<string, string>>({});
-  const [personalityType, setPersonalityType] = useState<string | null>(null);
-  const [showResult, setShowResult] = useState(false);
+  const [questions, setQuestions] = useState<Question[]>([]);
+  const [answers, setAnswers] = useState<Record<string, number>>({});
+  const [results, setResults] = useState<PersonalityScores | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const questionsPerPage = 15;
 
-  const questions = [
-    {
-      id: "problem_solving",
-      question: "How do you prefer to solve problems?",
-      options: [
-        { value: "analytical", label: "By analyzing data and using logical thinking", type: "Analytical" },
-        { value: "creative", label: "By brainstorming and thinking outside the box", type: "Creative" },
-        { value: "practical", label: "By finding practical, tried-and-tested solutions", type: "Practical" },
-        { value: "collaborative", label: "By discussing with others and finding consensus", type: "Social" }
-      ]
-    },
-    {
-      id: "work_environment",
-      question: "What work environment energizes you most?",
-      options: [
-        { value: "team", label: "Collaborative team environments with lots of interaction", type: "Social" },
-        { value: "independent", label: "Quiet, independent spaces where I can focus", type: "Analytical" },
-        { value: "dynamic", label: "Fast-paced, ever-changing environments", type: "Creative" },
-        { value: "structured", label: "Well-organized, structured environments", type: "Practical" }
-      ]
-    },
-    {
-      id: "learning_style",
-      question: "How do you learn best?",
-      options: [
-        { value: "hands_on", label: "Through hands-on experience and practice", type: "Practical" },
-        { value: "theory", label: "By understanding theories and concepts first", type: "Analytical" },
-        { value: "discussion", label: "Through group discussions and collaboration", type: "Social" },
-        { value: "exploration", label: "By exploring and experimenting freely", type: "Creative" }
-      ]
-    },
-    {
-      id: "decision_making",
-      question: "When making important decisions, you rely most on:",
-      options: [
-        { value: "data", label: "Facts, data, and logical analysis", type: "Analytical" },
-        { value: "intuition", label: "Gut feeling and creative insights", type: "Creative" },
-        { value: "experience", label: "Past experience and proven methods", type: "Practical" },
-        { value: "consensus", label: "Input from others and group consensus", type: "Social" }
-      ]
-    },
-    {
-      id: "motivation",
-      question: "What motivates you most in your studies/work?",
-      options: [
-        { value: "impact", label: "Making a positive impact on people's lives", type: "Social" },
-        { value: "innovation", label: "Creating something new and innovative", type: "Creative" },
-        { value: "mastery", label: "Mastering complex concepts and skills", type: "Analytical" },
-        { value: "results", label: "Achieving tangible, practical results", type: "Practical" }
-      ]
-    },
-    {
-      id: "challenge_approach",
-      question: "When facing a difficult challenge, you:",
-      options: [
-        { value: "break_down", label: "Break it down systematically and analyze each part", type: "Analytical" },
-        { value: "brainstorm", label: "Generate multiple creative solutions", type: "Creative" },
-        { value: "seek_help", label: "Seek advice and collaborate with others", type: "Social" },
-        { value: "apply_experience", label: "Apply what has worked before", type: "Practical" }
-      ]
-    }
-  ];
-
-  const personalityDescriptions = {
-    Analytical: {
-      icon: Brain,
-      description: "You excel at logical thinking, data analysis, and systematic problem-solving. Perfect for STEM fields and research.",
-      color: "text-academic-blue"
-    },
-    Creative: {
-      icon: Lightbulb,
-      description: "You thrive on innovation, artistic expression, and thinking outside the box. Ideal for design, arts, and entrepreneurship.",
-      color: "text-warm-accent"
-    },
-    Practical: {
-      icon: Target,
-      description: "You focus on real-world applications and tangible results. Great for engineering, business, and applied sciences.",
-      color: "text-success-green"
-    },
-    Social: {
-      icon: Users,
-      description: "You're motivated by helping others and working in teams. Perfect for education, psychology, and social sciences.",
-      color: "text-purple-600"
-    }
-  };
-
-  const handleAnswerChange = (questionId: string, value: string) => {
-    setAnswers({ ...answers, [questionId]: value });
-  };
-
-  const calculatePersonalityType = () => {
-    const typeCounts: Record<string, number> = {
-      Analytical: 0,
-      Creative: 0,
-      Practical: 0,
-      Social: 0
+  // Fetch questions from the API when the component mounts
+  useEffect(() => {
+    const fetchQuestions = async () => {
+      try {
+        const response = await fetch('http://localhost:3001/api/personality/questions');
+        if (!response.ok) {
+          throw new Error('Failed to fetch questions. Please try again later.');
+        }
+        const data = await response.json();
+        setQuestions(data); // Assuming your backend sends the questions directly as an array
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'An unknown error occurred');
+      } finally {
+        setIsLoading(false);
+      }
     };
 
-    Object.entries(answers).forEach(([questionId, answer]) => {
-      const question = questions.find(q => q.id === questionId);
-      const option = question?.options.find(opt => opt.value === answer);
-      if (option) {
-        typeCounts[option.type]++;
+    fetchQuestions();
+  }, []);
+
+  const handleAnswerChange = (questionId: string, value: string) => {
+    setAnswers({ ...answers, [questionId]: Number(value) });
+  };
+  
+  // Implement the Big Five scoring logic
+  const calculateScores = async () => {
+    setIsSubmitting(true);
+    setError(null);
+
+    try {
+      // Send the answers AND questions to your backend API
+      const response = await fetch('http://localhost:3001/api/personality/score', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ answers, questions }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Server responded with status: ${response.status}`);
       }
-    });
 
-    const dominantType = Object.entries(typeCounts).reduce((a, b) => 
-      typeCounts[a[0]] > typeCounts[b[0]] ? a : b
-    )[0];
+      const data = await response.json();
 
-    setPersonalityType(dominantType);
-    setShowResult(true);
-    onPersonalityDetermined(dominantType);
+      if (data.success && data.scores) {
+        setResults(data.scores);
+        onPersonalityDetermined(data.scores); // Pass the detailed scores object up
+      } else {
+        throw new Error(data.error || 'Failed to get scores from the server.');
+      }
+
+    } catch (err) {
+      console.error("API call failed:", err);
+      setError(err instanceof Error ? err.message : 'An unknown error occurred.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
-  const isComplete = Object.keys(answers).length === questions.length;
+  const answeredQuestions = Object.keys(answers).length;
+  const totalQuestions = questions.length;
+  const isComplete = totalQuestions > 0 && answeredQuestions === totalQuestions;
+  const progress = totalQuestions > 0 ? (answeredQuestions / totalQuestions) * 100 : 0;
+  const totalPages = Math.ceil(totalQuestions / questionsPerPage);
+  const startIndex = (currentPage - 1) * questionsPerPage;
+  const currentQuestions = questions.slice(startIndex, startIndex + questionsPerPage);
+
+  if (isLoading) return <p>Loading test...</p>;
+  if (error) return <p className="text-red-500">{error}</p>;
 
   return (
     <Card className="shadow-card hover:shadow-card-hover transition-all duration-300">
       <CardHeader className="bg-gradient-card rounded-t-lg">
         <CardTitle className="flex items-center gap-2 text-academic-blue">
           <Brain className="w-6 h-6" />
-          Personality Assessment
+          Big Five Personality Assessment
         </CardTitle>
         <CardDescription>
-          Answer these questions to discover your learning style and career preferences
+          Discover your personality profile to find matching career paths. Based on the IPIP-NEO-120.
         </CardDescription>
       </CardHeader>
       <CardContent className="p-6">
-        <div className="space-y-8">
-          {questions.map((question, index) => (
-            <div key={question.id} className="space-y-4">
-              <div className="flex items-start gap-3">
-                <span className="flex-shrink-0 w-8 h-8 bg-academic-blue text-white rounded-full flex items-center justify-center text-sm font-semibold">
-                  {index + 1}
-                </span>
-                <h3 className="font-medium text-gray-900 leading-6">{question.question}</h3>
-              </div>
-              
-              <RadioGroup
-                value={answers[question.id] || ""}
-                onValueChange={(value) => handleAnswerChange(question.id, value)}
-                className="ml-11 space-y-3"
-              >
-                {question.options.map((option) => (
-                  <div key={option.value} className="flex items-start space-x-3">
-                    <RadioGroupItem value={option.value} id={`${question.id}-${option.value}`} />
-                    <Label 
-                      htmlFor={`${question.id}-${option.value}`}
-                      className="text-sm leading-5 cursor-pointer hover:text-academic-blue transition-colors"
-                    >
-                      {option.label}
-                    </Label>
+        {!results ? (
+          <>
+            <div className="space-y-8">
+              {currentQuestions.map((question, index) => (
+                <div key={question.id} className="space-y-4">
+                  <div className="flex items-start gap-3">
+                    <span className="flex-shrink-0 w-8 h-8 bg-academic-blue text-white rounded-full flex items-center justify-center text-sm font-semibold">
+                      {startIndex + index + 1}
+                    </span>
+                    <h3 className="font-medium text-gray-900 leading-6">{question.text}</h3>
                   </div>
-                ))}
-              </RadioGroup>
+                  
+                  <RadioGroup
+                    value={answers[question.id]?.toString() || ""}
+                    onValueChange={(value) => handleAnswerChange(question.id, value)}
+                    className="ml-11 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3"
+                  >
+                    {likertOptions.map(option => (
+                      <div key={option.value} className="flex items-center space-x-2">
+                        <RadioGroupItem value={option.value.toString()} id={`${question.id}-${option.value}`} />
+                        <Label htmlFor={`${question.id}-${option.value}`} className="cursor-pointer">
+                          {option.label}
+                        </Label>
+                      </div>
+                    ))}
+                  </RadioGroup>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
 
-        <Button 
-          onClick={calculatePersonalityType}
-          disabled={!isComplete}
-          className="w-full mt-8 bg-warm-accent hover:bg-warm-accent/90 text-white shadow-button transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:hover:scale-100"
-          size="lg"
-        >
-          <Brain className="w-5 h-5 mr-2" />
-          {isComplete ? 'Discover My Personality Type' : `Answer ${questions.length - Object.keys(answers).length} more questions`}
-        </Button>
-
-        {showResult && personalityType && (
-          <div className="mt-6 p-6 bg-warm-accent-light border border-warm-accent/20 rounded-lg">
-            <div className="flex items-center gap-3 mb-4">
-              <CheckCircle2 className="w-6 h-6 text-warm-accent" />
-              <h3 className="text-lg font-semibold text-gray-900">Your Personality Type</h3>
+            <div className="flex justify-between mt-6">
+              <Button 
+                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                disabled={currentPage === 1}
+                variant="outline"
+              >
+                Previous
+              </Button>
+              <Button 
+                onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                disabled={currentPage === totalPages}
+                variant="outline"
+              >
+                Next
+              </Button>
             </div>
             
-            <div className="flex items-center gap-4 mb-4">
-              {React.createElement(personalityDescriptions[personalityType as keyof typeof personalityDescriptions].icon, {
-                className: `w-12 h-12 ${personalityDescriptions[personalityType as keyof typeof personalityDescriptions].color}`
-              })}
-              <div>
-                <div className="text-2xl font-bold text-gray-900">{personalityType}</div>
-                <div className="text-sm text-gray-600">Personality Type</div>
+            <div className="mt-8">
+              <div className="flex justify-between mb-2">
+                <span className="text-sm font-medium text-gray-700">Progress</span>
+                <span className="text-sm font-medium text-gray-700">{answeredQuestions} / {totalQuestions}</span>
               </div>
+              <Progress value={progress} className="w-full" />
+            </div>
+
+            <Button 
+              onClick={calculateScores}
+              disabled={!isComplete || isSubmitting} 
+              className="w-full mt-6 bg-warm-accent hover:bg-warm-accent/90 text-white shadow-button transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:hover:scale-100"
+              size="lg"
+            >
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" /> 
+                  Calculating...
+                </>
+              ) : (
+                <>
+                  <Brain className="w-5 h-5 mr-2" />
+                  {isComplete ? 'See My Results' : `Answer ${totalQuestions - answeredQuestions} more questions`}
+                </>
+              )}
+            </Button>
+          </>
+        ) : (
+          // 3. Display the detailed results
+          <div className="mt-6 p-4 bg-gray-50 border rounded-lg">
+            <div className="flex items-center gap-3 mb-4">
+              <CheckCircle2 className="w-6 h-6 text-success-green" />
+              <h3 className="text-xl font-semibold text-gray-900">Your Personality Profile</h3>
             </div>
             
-            <p className="text-gray-700 leading-relaxed">
-              {personalityDescriptions[personalityType as keyof typeof personalityDescriptions].description}
-            </p>
+            <div className="space-y-4">
+              {Object.entries(results).map(([domain, score]) => {
+                const detail = domainDetails[domain as keyof typeof domainDetails];
+                
+                return (
+                  <div key={domain}>
+                    <div className="flex items-center gap-3 mb-1">
+                      {React.createElement(detail.icon, { className: `w-5 h-5 ${detail.color}` })}
+                      <h4 className="font-semibold">{detail.name}</h4>
+                    </div>
+                    <p className="text-sm text-gray-600 mb-2 ml-8">{detail.description}</p>
+                    <div className="flex items-center gap-2 ml-8">
+                      <Progress value={score} className="w-full" />
+                      <span className="font-semibold text-sm">{Math.round(score)}%</span>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
           </div>
         )}
       </CardContent>

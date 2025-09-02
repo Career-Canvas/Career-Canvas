@@ -21,8 +21,8 @@ app.use(helmet());
 
 // CORS configuration to allow requests from your frontend
 app.use(cors({
-  origin: ['http://localhost:5173', 'http://localhost:8080'],
-  credentials: true
+  origin: ['http://localhost:5173', 'http://localhost:8080'],
+  credentials: true
 }));
 
 // Rate limiting to prevent abuse
