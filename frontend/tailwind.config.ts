@@ -52,7 +52,7 @@ export default {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))'
 				},
-				// Campus Companion Design Tokens
+				  // Career Canvas Design Tokens
 				'academic-blue': {
 					DEFAULT: 'hsl(var(--academic-blue))',
 					light: 'hsl(var(--academic-blue-light))'

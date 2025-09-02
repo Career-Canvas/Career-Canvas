@@ -8,12 +8,12 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 // Debug: Check if variables are loaded
-console.log('�� Environment check:');
-console.log('API Key exists:', !!process.env.HUGGING_FACE_API_KEY);
+console.log('🔍 Environment check:');
+console.log('API Key exists:', !!process.env.GOOGLE_PERSPECTIVE_API_KEY);
 console.log('Frontend URL:', process.env.FRONTEND_URL);
 console.log('Port:', process.env.PORT);
 
-// NOW import routes (remove the unused filterReview import)
+// NOW import routes
 import { reviewRoutes } from './routes/reviews.js';
 
 const app = express();
@@ -86,7 +86,7 @@ app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
   console.log(`📝 Review filtering API available at http://localhost:${PORT}/api/reviews`);
   console.log(`🏥 Health check at http://localhost:${PORT}/health`);
-  console.log(`�� API Key loaded: ${process.env.HUGGING_FACE_API_KEY ? 'YES' : 'NO'}`);
+  console.log(`🔑 API Key loaded: ${process.env.GOOGLE_PERSPECTIVE_API_KEY ? 'YES' : 'NO'}`);
 });
 
 export default app;

@@ -1,42 +1,57 @@
 import axios from 'axios';
 
-// Hugging Face API configuration - Use the correct toxicity detection model
-const HUGGING_FACE_API_URL = 'https://api-inference.huggingface.co/models/unitary/toxic-bert';
+// Google Perspective API configuration
+const PERSPECTIVE_API_URL = 'https://commentanalyzer.googleapis.com/v1alpha1/comments:analyze';
 
 // Test the API key on startup
 console.log('🔍 ReviewFilter service loaded');
-console.log('🔍 API URL:', HUGGING_FACE_API_URL);
-console.log('🔍 API Key exists:', !!process.env.HUGGING_FACE_API_KEY);
-if (process.env.HUGGING_FACE_API_KEY) {
-  console.log('🔍 API Key length:', process.env.HUGGING_FACE_API_KEY.length);
-  console.log('🔍 API Key starts with:', process.env.HUGGING_FACE_API_KEY.substring(0, 10) + '...');
+console.log('🔍 API URL:', PERSPECTIVE_API_URL);
+console.log('🔍 API Key exists:', !!process.env.GOOGLE_PERSPECTIVE_API_KEY);
+if (process.env.GOOGLE_PERSPECTIVE_API_KEY) {
+  console.log('🔍 API Key length:', process.env.GOOGLE_PERSPECTIVE_API_KEY.length);
+  console.log('🔍 API Key starts with:', process.env.GOOGLE_PERSPECTIVE_API_KEY.substring(0, 10) + '...');
 }
 
 /**
- * Analyzes text for toxicity using Hugging Face's toxic-bert model
+ * Analyzes text for toxicity using Google's Perspective API
  * @param {string} text - The text to analyze
  * @returns {Promise<Object>} - Analysis results with toxicity scores
  */
 export async function analyzeToxicity(text) {
   try {
-    const API_KEY = process.env.HUGGING_FACE_API_KEY;
+    const API_KEY = process.env.GOOGLE_PERSPECTIVE_API_KEY;
     
     console.log('🔍 Starting toxicity analysis for text:', text);
     console.log('🔍 API Key exists:', !!API_KEY);
-    console.log('🔍 API URL:', HUGGING_FACE_API_URL);
+    console.log('🔍 API URL:', PERSPECTIVE_API_URL);
     
     if (!API_KEY) {
-      throw new Error('Hugging Face API key not configured');
+      throw new Error('Google Perspective API key not configured');
     }
 
-    console.log('🔍 Making request to Hugging Face API...');
+    console.log('🔍 Making request to Google Perspective API...');
     
+    // Google Perspective API request format
+    const requestData = {
+      comment: {
+        text: text
+      },
+      requestedAttributes: {
+        TOXICITY: {},
+        SEVERE_TOXICITY: {},
+        IDENTITY_ATTACK: {},
+        INSULT: {},
+        PROFANITY: {},
+        THREAT: {},
+        SEXUALLY_EXPLICIT: {}
+      }
+    };
+
     const response = await axios.post(
-      HUGGING_FACE_API_URL,
-      { inputs: text },
+      `${PERSPECTIVE_API_URL}?key=${API_KEY}`,
+      requestData,
       {
         headers: {
-          'Authorization': `Bearer ${API_KEY}`,
           'Content-Type': 'application/json'
         },
         timeout: 10000
@@ -123,26 +138,30 @@ export async function filterReview(reviewText) {
     // Debug: Log the raw API response
     console.log('🔍 Raw Hugging Face API response:', JSON.stringify(toxicityResults, null, 2));
     
-    // Extract toxicity scores and convert to the format our code expects
-    const rawScores = toxicityResults[0];
-    console.log('🔍 Raw scores from API:', JSON.stringify(rawScores, null, 2));
+    // Extract toxicity scores from Google's response format
+    const attributeScores = toxicityResults.attributeScores;
+    console.log('🔍 Raw scores from API:', JSON.stringify(attributeScores, null, 2));
     
-    // Convert array of {label, score} objects to {category: score} format
+    // Convert Google's format to our expected format
     const scores = {};
-    rawScores.forEach(item => {
-      scores[item.label] = item.score;
-    });
+    if (attributeScores) {
+      Object.keys(attributeScores).forEach(key => {
+        const score = attributeScores[key].summaryScore.value;
+        scores[key.toLowerCase()] = score;
+      });
+    }
     
     console.log('🔍 Converted scores object:', JSON.stringify(scores, null, 2));
     
-    // Define thresholds for different toxicity categories (LOWERED for better detection)
+    // Define thresholds for different toxicity categories (Google uses 0-1 scale)
     const thresholds = {
-      toxic: 0.3,        // Lower threshold for toxic content (was 0.7)
-      severe_toxic: 0.2, // Lower threshold for severe toxicity (was 0.6)
-      obscene: 0.2,      // Lower threshold for obscene content (was 0.6)
-      threat: 0.15,      // Lower threshold for threats (was 0.5)
-      insult: 0.2,       // Lower threshold for insults (was 0.6)
-      identity_hate: 0.15 // Lower threshold for identity-based hate (was 0.5)
+      toxicity: 0.3,           // General toxicity
+      severe_toxicity: 0.2,    // Severe toxicity
+      identity_attack: 0.2,    // Identity-based attacks
+      insult: 0.2,             // Insults
+      profanity: 0.2,          // Profanity
+      threat: 0.15,            // Threats
+      sexually_explicit: 0.2   // Sexually explicit content
     };
 
     // Check if any category exceeds thresholds

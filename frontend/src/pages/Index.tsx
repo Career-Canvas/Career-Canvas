@@ -62,13 +62,13 @@ const Index = () => {
       {/* Footer */}
       <footer className="bg-academic-blue text-white py-12">
         <div className="max-w-7xl mx-auto px-4 text-center">
-          <h3 className="text-2xl font-bold mb-4">Campus Companion</h3>
+          <h3 className="text-2xl font-bold mb-4">Career Canvas</h3>
           <p className="text-white/80 mb-6 max-w-2xl mx-auto">
             Helping South African students make informed decisions about their university education 
             by combining academic requirements with authentic student experiences.
           </p>
           <div className="text-sm text-white/60">
-            <p>© 2024 Campus Companion. Built with ❤️ for South African students.</p>
+            <p>© 2024 Career Canvas. Built with ❤️ for South African students.</p>
           </div>
         </div>
       </footer>
