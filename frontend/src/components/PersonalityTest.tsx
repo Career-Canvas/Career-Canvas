@@ -1,15 +1,15 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
-import { Brain, Users, Lightbulb, CheckCircle2, DraftingCompass, Handshake, Microscope, Rocket, ArrowLeft, ArrowRight } from "lucide-react";
+import { Brain, Users, Lightbulb, CheckCircle2, DraftingCompass, Handshake, Microscope, Rocket, ArrowLeft, ArrowRight, RefreshCw } from "lucide-react";
 import * as React from "react";
 import { Progress } from "@/components/ui/progress";
 
 
 interface PersonalityTestProps {
-  onPersonalityDetermined: (personalityType: string) => void;
+  onPersonalityDetermined: (personalityType: string | null) => void;
 }
 
 const PersonalityTest = ({ onPersonalityDetermined }: PersonalityTestProps) => {
@@ -19,6 +19,16 @@ const PersonalityTest = ({ onPersonalityDetermined }: PersonalityTestProps) => {
   const [currentPage, setCurrentPage] = useState(1);
   
   const QUESTIONS_PER_PAGE = 5;
+
+  // Effect to load cached result on component mount
+  useEffect(() => {
+    const cachedResult = localStorage.getItem("personalityTestResult");
+    if (cachedResult) {
+      setPersonalityType(cachedResult);
+      setShowResult(true);
+      onPersonalityDetermined(cachedResult);
+    }
+  }, [onPersonalityDetermined]);
 
   const questions = useMemo(() => [
     // --- Introversion (I) vs. Extraversion (E) ---
@@ -216,7 +226,7 @@ const PersonalityTest = ({ onPersonalityDetermined }: PersonalityTestProps) => {
   };
 
   const calculatePersonalityType = () => {
-    const counts = { I: 0, E: 0, S: 0, N: 0, T: 0, F: 0, J: 0, P: 0 };
+    const counts: Record<string, number> = { I: 0, E: 0, S: 0, N: 0, T: 0, F: 0, J: 0, P: 0 };
     Object.values(answers).forEach(value => {
       counts[value]++;
     });
@@ -227,9 +237,19 @@ const PersonalityTest = ({ onPersonalityDetermined }: PersonalityTestProps) => {
     result += counts.T >= counts.F ? "T" : "F";
     result += counts.J >= counts.P ? "J" : "P";
     
+    localStorage.setItem("personalityTestResult", result);
     setPersonalityType(result);
     setShowResult(true);
     onPersonalityDetermined(result);
+  };
+
+  const handleRedoTest = () => {
+    localStorage.removeItem("personalityTestResult");
+    setAnswers({});
+    setPersonalityType(null);
+    setShowResult(false);
+    setCurrentPage(1);
+    onPersonalityDetermined(null);
   };
 
   const isPageComplete = useMemo(() => {
@@ -250,95 +270,103 @@ const PersonalityTest = ({ onPersonalityDetermined }: PersonalityTestProps) => {
         </CardDescription>
       </CardHeader>
       <CardContent className="p-6">
-        <div className="mb-6">
-          <div className="flex justify-between items-center mb-2">
-            <span className="text-sm font-medium text-gray-700">Progress</span>
-            <span className="text-sm font-semibold text-academic-blue">{Math.round(progress)}%</span>
-          </div>
-          <Progress value={progress} />
-          <p className="text-center text-xs text-gray-500 mt-2">Page {currentPage} of {totalPages}</p>
-        </div>
-        
-        <div className="space-y-8">
-          {currentQuestions.map((question, index) => (
-            <div key={question.id} className="space-y-4">
-              <div className="flex items-start gap-3">
-                <span className="flex-shrink-0 w-8 h-8 bg-academic-blue text-white rounded-full flex items-center justify-center text-sm font-semibold">
-                  {startIndex + index + 1}
-                </span>
-                <h3 className="font-medium text-gray-900 leading-6">{question.question}</h3>
+        {showResult && personalityType ? (
+          <div>
+            <div className="p-6 bg-warm-accent-light border border-warm-accent/20 rounded-lg">
+              <div className="flex items-center gap-3 mb-4">
+                <CheckCircle2 className="w-6 h-6 text-warm-accent" />
+                <h3 className="text-lg font-semibold text-gray-900">Your Personality Type</h3>
               </div>
               
-              <RadioGroup
-                value={answers[question.id] || ""}
-                onValueChange={(value) => handleAnswerChange(question.id, value)}
-                className="ml-11 space-y-3"
-              >
-                {question.options.map((option) => (
-                  <div key={option.value} className="flex items-start space-x-3">
-                    <RadioGroupItem value={option.value} id={`${question.id}-${option.value}`} />
-                    <Label 
-                      htmlFor={`${question.id}-${option.value}`}
-                      className="text-sm leading-5 cursor-pointer hover:text-academic-blue transition-colors"
-                    >
-                      {option.label}
-                    </Label>
-                  </div>
-                ))}
-              </RadioGroup>
-            </div>
-          ))}
-        </div>
-
-        <div className="mt-8 flex justify-between items-center">
-          {currentPage > 1 ? (
-             <Button onClick={() => setCurrentPage(p => p - 1)} variant="outline">
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Previous
-            </Button>
-          ) : <div />}
-
-          {currentPage < totalPages && (
-            <Button onClick={() => setCurrentPage(p => p + 1)} disabled={!isPageComplete} className="ml-auto">
-              Next
-              <ArrowRight className="w-4 h-4 ml-2" />
-            </Button>
-          )}
-
-          {currentPage === totalPages && (
-             <Button 
-              onClick={calculatePersonalityType}
-              disabled={!isPageComplete}
-              className="w-full bg-warm-accent hover:bg-warm-accent/90 text-white shadow-button transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:hover:scale-100"
-              size="lg"
-            >
-              <Brain className="w-5 h-5 mr-2" />
-              Discover My Personality Type
-            </Button>
-          )}
-        </div>
-
-        {showResult && personalityType && (
-          <div className="mt-6 p-6 bg-warm-accent-light border border-warm-accent/20 rounded-lg">
-            <div className="flex items-center gap-3 mb-4">
-              <CheckCircle2 className="w-6 h-6 text-warm-accent" />
-              <h3 className="text-lg font-semibold text-gray-900">Your Personality Type</h3>
-            </div>
-            
-            <div className="flex items-center gap-4 mb-4">
-               {React.createElement(personalityDescriptions[personalityType as keyof typeof personalityDescriptions].icon, {
-                className: `w-12 h-12 ${personalityDescriptions[personalityType as keyof typeof personalityDescriptions].color}`
-              })}
-              <div>
-                <div className="text-2xl font-bold text-gray-900">{personalityType} - {personalityDescriptions[personalityType as keyof typeof personalityDescriptions].title}</div>
-                <div className="text-sm text-gray-600">Personality Type</div>
+              <div className="flex items-center gap-4 mb-4">
+                 {React.createElement(personalityDescriptions[personalityType as keyof typeof personalityDescriptions].icon, {
+                  className: `w-12 h-12 ${personalityDescriptions[personalityType as keyof typeof personalityDescriptions].color}`
+                })}
+                <div>
+                  <div className="text-2xl font-bold text-gray-900">{personalityType} - {personalityDescriptions[personalityType as keyof typeof personalityDescriptions].title}</div>
+                  <div className="text-sm text-gray-600">Personality Type</div>
+                </div>
               </div>
+              
+              <p className="text-gray-700 leading-relaxed">
+                {personalityDescriptions[personalityType as keyof typeof personalityDescriptions].description}
+              </p>
+            </div>
+            <Button onClick={handleRedoTest} variant="outline" className="w-full mt-4">
+              <RefreshCw className="w-4 h-4 mr-2" />
+              Redo Test
+            </Button>
+          </div>
+        ) : (
+          <>
+            <div className="mb-6">
+              <div className="flex justify-between items-center mb-2">
+                <span className="text-sm font-medium text-gray-700">Progress</span>
+                <span className="text-sm font-semibold text-academic-blue">{Math.round(progress)}%</span>
+              </div>
+              <Progress value={progress} />
+              <p className="text-center text-xs text-gray-500 mt-2">Page {currentPage} of {totalPages}</p>
             </div>
             
-            <p className="text-gray-700 leading-relaxed">
-              {personalityDescriptions[personalityType as keyof typeof personalityDescriptions].description}
-            </p>
-          </div>
+            <div className="space-y-8">
+              {currentQuestions.map((question, index) => (
+                <div key={question.id} className="space-y-4">
+                  <div className="flex items-start gap-3">
+                    <span className="flex-shrink-0 w-8 h-8 bg-academic-blue text-white rounded-full flex items-center justify-center text-sm font-semibold">
+                      {startIndex + index + 1}
+                    </span>
+                    <h3 className="font-medium text-gray-900 leading-6">{question.question}</h3>
+                  </div>
+                  
+                  <RadioGroup
+                    value={answers[question.id] || ""}
+                    onValueChange={(value) => handleAnswerChange(question.id, value)}
+                    className="ml-11 space-y-3"
+                  >
+                    {question.options.map((option) => (
+                      <div key={option.value} className="flex items-start space-x-3">
+                        <RadioGroupItem value={option.value} id={`${question.id}-${option.value}`} />
+                        <Label 
+                          htmlFor={`${question.id}-${option.value}`}
+                          className="text-sm leading-5 cursor-pointer hover:text-academic-blue transition-colors"
+                        >
+                          {option.label}
+                        </Label>
+                      </div>
+                    ))}
+                  </RadioGroup>
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-8 flex justify-between items-center">
+              {currentPage > 1 ? (
+                 <Button onClick={() => setCurrentPage(p => p - 1)} variant="outline">
+                  <ArrowLeft className="w-4 h-4 mr-2" />
+                  Previous
+                </Button>
+              ) : <div />}
+
+              {currentPage < totalPages && (
+                <Button onClick={() => setCurrentPage(p => p + 1)} disabled={!isPageComplete} className="ml-auto">
+                  Next
+                  <ArrowRight className="w-4 h-4 ml-2" />
+                </Button>
+              )}
+
+              {currentPage === totalPages && (
+                 <Button 
+                  onClick={calculatePersonalityType}
+                  disabled={!isPageComplete}
+                  className="w-full bg-warm-accent hover:bg-warm-accent/90 text-white shadow-button transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:hover:scale-100"
+                  size="lg"
+                >
+                  <Brain className="w-5 h-5 mr-2" />
+                  Discover My Personality Type
+                </Button>
+              )}
+            </div>
+          </>
         )}
       </CardContent>
     </Card>
