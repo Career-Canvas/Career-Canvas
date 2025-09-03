@@ -16,7 +16,11 @@ interface APSResult {
   up: number | null;
 }
 
-const APSCalculator = () => {
+interface APSCalculatorProps {
+  onAPSCalculated: (score: number, subjects: string[]) => void;
+}
+
+const APSCalculator = ({ onAPSCalculated }: APSCalculatorProps) => {
   const [subjects, setSubjects] = useState<Subject[]>([
     { name: "", percentage: "" }, // Maths / Maths Lit
     { name: "Life Orientation", percentage: "" }, // Life Orientation
@@ -132,6 +136,10 @@ const APSCalculator = () => {
     setApsResults({ wits: witsScore, uj: ujScore, up: upScore });
     setShowResult(true);
     setErrorMessage("");
+    
+    // Call the callback with the Wits score and selected subjects
+    const selectedSubjectNames = validSubjects.map(s => s.name);
+    onAPSCalculated(witsScore, selectedSubjectNames);
   };
 
   return (
