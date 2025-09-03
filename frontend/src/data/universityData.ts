@@ -13,11 +13,18 @@ export interface Course {
   intake: string;
 }
 
+export interface UniversityVideo {
+  id: string;
+  title: string;
+  type: "Campus Tour" | "Student Vlog" | "Faculty Focus";
+}
+
 export interface UniversityInfo {
   name: string;
   shortName: string;
   description: string;
   campusTips: string[];
+  videos: UniversityVideo[];
 }
 
 export const universities: UniversityInfo[] = [
@@ -31,6 +38,23 @@ export const universities: UniversityInfo[] = [
       "🍕 Nandos in Matrix is always busy, try the food trucks near the Great Hall for quicker meals",
       "🏃‍♂️ Download the Wits app for campus maps - you'll get lost without it in your first week!"
     ],
+    videos: [
+      {
+        id: "placeholder-wits-campus-tour",
+        title: "Wits Campus Tour - A Complete Walkthrough",
+        type: "Campus Tour"
+      },
+      {
+        id: "placeholder-wits-student-vlog",
+        title: "A Day in the Life of a Wits Student",
+        type: "Student Vlog"
+      },
+      {
+        id: "placeholder-wits-faculty-focus",
+        title: "Meet the Engineering Faculty at Wits",
+        type: "Faculty Focus"
+      }
+    ]
   },
   {
     name: "University of Johannesburg",
@@ -42,6 +66,23 @@ export const universities: UniversityInfo[] = [
       "☕ The Kingsway campus has the best coffee at Student Centre - avoid the long lunch queues",
       "🎵 Join a society early! UJ has amazing cultural societies and the music scene is incredible"
     ],
+    videos: [
+      {
+        id: "placeholder-uj-campus-tour",
+        title: "UJ Campus Tour - Kingsway to DFC",
+        type: "Campus Tour"
+      },
+      {
+        id: "placeholder-uj-student-vlog",
+        title: "Student Life at UJ - The Real Experience",
+        type: "Student Vlog"
+      },
+      {
+        id: "placeholder-uj-faculty-focus",
+        title: "Business Faculty Spotlight at UJ",
+        type: "Faculty Focus"
+      }
+    ]
   },
   {
     name: "University of Cape Town",
@@ -53,6 +94,23 @@ export const universities: UniversityInfo[] = [
       "🍔 Wimpy in Kramer is overpriced, head to Observatory for cheap eats off campus",
       "📖 Jagger Library is beautiful but can be distracting - try Chancellor Oppenheimer for serious studying"
     ],
+    videos: [
+      {
+        id: "placeholder-uct-campus-tour",
+        title: "UCT Campus Tour - From Upper to Lower Campus",
+        type: "Campus Tour"
+      },
+      {
+        id: "placeholder-uct-student-vlog",
+        title: "A Day at UCT - Student Perspective",
+        type: "Student Vlog"
+      },
+      {
+        id: "placeholder-uct-faculty-focus",
+        title: "Medical Faculty Introduction at UCT",
+        type: "Faculty Focus"
+      }
+    ]
   }
 ];
 

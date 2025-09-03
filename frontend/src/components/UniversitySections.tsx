@@ -1,9 +1,10 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Star, MapPin, Wifi, Car, Coffee, Heart, MessageCircle } from "lucide-react";
+import { Star, MapPin, Wifi, Car, Coffee, Heart, MessageCircle, Video } from "lucide-react";
 import { universities, type UniversityInfo } from "@/data/universityData";
 import ReviewSubmissionForm from "./ReviewSubmissionForm";
+import VideoCard from "./VideoCard";
 import { useState, useEffect } from "react";
 import { getReviews, Review } from "../services/reviewService";
 
@@ -203,6 +204,25 @@ const UniversitySections = () => {
                   </div>
                 </CardContent>
               </Card>
+            </div>
+
+            {/* Day in the Life Section */}
+            <div className="space-y-6">
+              <div className="text-center">
+                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2 flex items-center justify-center gap-2">
+                  <Video className="w-6 h-6 text-academic-blue" />
+                  A Day in the Life
+                </h3>
+                <p className="text-gray-600 dark:text-gray-300">
+                  Experience campus life through the eyes of students and faculty
+                </p>
+              </div>
+              
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {university.videos.map((video, index) => (
+                  <VideoCard key={index} video={video} />
+                ))}
+              </div>
             </div>
 
             {/* Divider */}
