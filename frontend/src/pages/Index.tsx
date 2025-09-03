@@ -121,6 +121,32 @@ const Index = () => {
         <UniversitySections />
       </section>
 
+      {/* Course Reviews Section */}
+      <section className="py-16 bg-white dark:bg-gray-800">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
+              Student Course Reviews
+            </h2>
+            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+              Read authentic reviews from students who have experienced these degree programs firsthand. 
+              Share your own experiences to help future students make informed decisions.
+            </p>
+            <div className="mt-8">
+              <a
+                href="/course-reviews"
+                className="inline-flex items-center px-8 py-4 bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-full transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
+              >
+                📝 Browse & Submit Course Reviews
+                <svg className="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Footer */}
       <footer className="bg-academic-blue text-white py-12">
         <div className="max-w-7xl mx-auto px-4 text-center">

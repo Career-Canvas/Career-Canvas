@@ -61,6 +61,15 @@ const CampusHero = () => {
             <Heart className="w-5 h-5 text-warm-accent group-hover:scale-110 transition-transform duration-300" />
             <span className="text-white font-medium">Real Experiences</span>
           </button>
+          <button 
+            onClick={() => {
+              window.location.href = '/course-reviews';
+            }}
+            className="flex items-center space-x-2 bg-white/10 backdrop-blur-sm rounded-full px-6 py-3 hover:bg-white/20 transition-all duration-300 cursor-pointer group"
+          >
+            <GraduationCap className="w-5 h-5 text-warm-accent group-hover:scale-110 transition-transform duration-300" />
+            <span className="text-white font-medium">Course Reviews</span>
+          </button>
         </div>
       </div>
     </section>

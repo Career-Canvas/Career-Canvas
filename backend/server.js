@@ -30,6 +30,7 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 
 // NOW import routes (these routes already use supabase via supabaseClient.js)
 import { reviewRoutes } from './routes/reviews.js';
+import { courseReviewRoutes } from './routes/courseReviews.js';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -99,6 +100,7 @@ app.post('/api/chatbot', chatbotLimiter, (req, res) => {
 
 // ✅ Use router directly (no supabase passed here)
 app.use('/api/reviews', reviewRoutes);
+app.use('/api/course-reviews', courseReviewRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
@@ -122,6 +124,9 @@ app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
   console.log(
     `📝 Review filtering API available at http://localhost:${PORT}/api/reviews`
+  );
+  console.log(
+    `📝 Course reviews API available at http://localhost:${PORT}/api/course-reviews`
   );
   console.log(`🏥 Health check at http://localhost:${PORT}/health`);
   console.log(

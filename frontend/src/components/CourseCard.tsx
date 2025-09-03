@@ -1,6 +1,9 @@
-import { Brain, Heart, Star, Clock, Users } from "lucide-react";
+import { Brain, Heart, Star, Clock, Users, MessageSquare } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { getCourseReviews, CourseReview } from "../services/courseReviewService";
 
 interface Course {
   courseName: string;
@@ -20,6 +23,56 @@ interface CourseCardProps {
 }
 
 const CourseCard = ({ course, isMatched = false }: CourseCardProps) => {
+  const navigate = useNavigate();
+  const [reviews, setReviews] = useState<CourseReview[]>([]);
+  const [isLoadingReviews, setIsLoadingReviews] = useState(false);
+
+  useEffect(() => {
+    const fetchReviews = async () => {
+      setIsLoadingReviews(true);
+      try {
+        const fetchedReviews = await getCourseReviews(course.university, course.courseName);
+        // Sort by rating (highest first) and take top 2
+        const topReviews = fetchedReviews
+          .sort((a, b) => (b.rating || 0) - (a.rating || 0))
+          .slice(0, 2);
+        setReviews(topReviews);
+      } catch (error) {
+        console.error('Error fetching reviews:', error);
+        setReviews([]);
+      } finally {
+        setIsLoadingReviews(false);
+      }
+    };
+
+    fetchReviews();
+  }, [course.university, course.courseName]);
+
+  const handleSeeMoreReviews = () => {
+    // Navigate to course review page and scroll to this course
+    const courseId = `${course.university}-${course.courseName}`.replace(/\s+/g, '-').toLowerCase();
+    navigate(`/course-reviews?course=${courseId}`);
+  };
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', { 
+      year: 'numeric', 
+      month: 'short', 
+      day: 'numeric' 
+    });
+  };
+
+  const getRatingStars = (rating: number) => {
+    return Array.from({ length: 5 }, (_, i) => (
+      <Star
+        key={i}
+        className={`w-3 h-3 ${
+          i < rating ? 'text-yellow-400 fill-current' : 'text-gray-300'
+        }`}
+      />
+    ));
+  };
 
   return (
     <Card className={`shadow-card hover:shadow-card-hover transition-all duration-300 ${isMatched ? 'ring-2 ring-success-green border-success-green/20' : ''}`}>
@@ -83,7 +136,7 @@ const CourseCard = ({ course, isMatched = false }: CourseCardProps) => {
         </div>
 
         {/* Heart Section */}
-        <div className="p-6">
+        <div className="p-6 border-b">
           <div className="flex items-center gap-2 mb-3">
             <div className="bg-red-100 p-2 rounded-full">
               <Heart className="w-5 h-5 text-red-500" />
@@ -92,6 +145,69 @@ const CourseCard = ({ course, isMatched = false }: CourseCardProps) => {
             <span className="text-sm text-gray-500 dark:text-gray-400">Student Experience</span>
           </div>
           <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">{course.heartInfo}</p>
+        </div>
+
+        {/* Course Reviews Section */}
+        <div className="p-6">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <div className="bg-blue-100 p-2 rounded-full">
+                <MessageSquare className="w-5 h-5 text-blue-600" />
+              </div>
+              <h4 className="font-semibold text-blue-600">Student Reviews</h4>
+            </div>
+            <Badge variant="outline" className="text-xs">
+              {reviews.length} {reviews.length === 1 ? 'Review' : 'Reviews'}
+            </Badge>
+          </div>
+
+          {isLoadingReviews ? (
+            <div className="text-center py-4">
+              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600 mx-auto"></div>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">Loading reviews...</p>
+            </div>
+          ) : reviews.length > 0 ? (
+            <div className="space-y-3 mb-4">
+              {reviews.map((review, index) => (
+                <div key={index} className="border-l-2 border-blue-200 pl-3 py-2">
+                  <div className="flex items-center gap-2 mb-1">
+                    <div className="flex items-center gap-1">
+                      {getRatingStars(review.rating || 0)}
+                      <span className="text-xs text-gray-600 dark:text-gray-400">
+                        {review.rating}/5
+                      </span>
+                    </div>
+                    <span className="text-xs text-gray-500 dark:text-gray-400">
+                      {formatDate(review.created_at || '')}
+                    </span>
+                  </div>
+                  <p className="text-sm text-gray-700 dark:text-gray-300 italic mb-1">
+                    "{review.review_text.length > 100 
+                      ? review.review_text.substring(0, 100) + '...' 
+                      : review.review_text}"
+                  </p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">
+                    - {review.author || 'Anonymous'}
+                  </p>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-4">
+              <MessageSquare className="w-8 h-8 text-gray-400 mx-auto mb-2" />
+              <p className="text-sm text-gray-500 dark:text-gray-400">No reviews yet</p>
+              <p className="text-xs text-gray-400 dark:text-gray-500">Be the first to review this course!</p>
+            </div>
+          )}
+
+          {/* See More Reviews Button */}
+          <button
+            onClick={handleSeeMoreReviews}
+            className="w-full mt-4 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors flex items-center justify-center gap-2"
+          >
+            <MessageSquare className="w-4 h-4" />
+            See More Reviews
+          </button>
         </div>
       </CardContent>
     </Card>

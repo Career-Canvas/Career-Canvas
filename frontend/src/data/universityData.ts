@@ -129,6 +129,19 @@ export const courses: Course[] = [
     intake: "February",
   },
   {
+    "courseName": "BSc Actuarial Science",
+    "requiredAPS": 42,
+    "requiredSubjects": ["English Home Language", "Mathematics", "Physical Science"],
+    "personalityType": "INTP",
+    "personalityGroup": "Analytical",
+    "brainInfo": "A very rigorous 3-year degree focused on the application of mathematical and statistical skills to complex financial problems. The curriculum is highly technical, covering advanced topics like financial mathematics, risk modeling, and stochastic processes. The program is designed to provide you with exemptions from the Actuarial Society of South Africa (ASSA) professional exams.",
+    "heartInfo": "The Actuarial Science program has a reputation for being one of the most challenging, but it fosters a tight-knit community of dedicated students. There is a strong culture of peer-to-peer tutoring and group study sessions. You will be part of a competitive, supportive environment that is well-connected with the financial and insurance industries.",
+    "university": "Wits",
+    "duration": "3 years",
+    "intake": "February"
+},
+
+  {
     courseName: "BCom Accounting",
     requiredAPS: 35,
     requiredSubjects: ["Mathematics", "Accounting"],
