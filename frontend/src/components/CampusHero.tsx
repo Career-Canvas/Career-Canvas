@@ -37,14 +37,30 @@ const CampusHero = () => {
         </p>
         
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-          <div className="flex items-center space-x-2 bg-white/10 backdrop-blur-sm rounded-full px-6 py-3">
-            <Brain className="w-5 h-5 text-warm-accent" />
+          <button 
+            onClick={() => {
+              document.getElementById('aps-calculator')?.scrollIntoView({ 
+                behavior: 'smooth',
+                block: 'start'
+              });
+            }}
+            className="flex items-center space-x-2 bg-white/10 backdrop-blur-sm rounded-full px-6 py-3 hover:bg-white/20 transition-all duration-300 cursor-pointer group"
+          >
+            <Brain className="w-5 h-5 text-warm-accent group-hover:scale-110 transition-transform duration-300" />
             <span className="text-white font-medium">Academic Match</span>
-          </div>
-          <div className="flex items-center space-x-2 bg-white/10 backdrop-blur-sm rounded-full px-6 py-3">
-            <Heart className="w-5 h-5 text-warm-accent" />
+          </button>
+          <button 
+            onClick={() => {
+              document.getElementById('university-sections')?.scrollIntoView({ 
+                behavior: 'smooth',
+                block: 'start'
+              });
+            }}
+            className="flex items-center space-x-2 bg-white/10 backdrop-blur-sm rounded-full px-6 py-3 hover:bg-white/20 transition-all duration-300 cursor-pointer group"
+          >
+            <Heart className="w-5 h-5 text-warm-accent group-hover:scale-110 transition-transform duration-300" />
             <span className="text-white font-medium">Real Experiences</span>
-          </div>
+          </button>
         </div>
       </div>
     </section>

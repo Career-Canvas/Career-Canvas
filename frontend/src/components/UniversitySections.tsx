@@ -43,15 +43,33 @@ const UniversitySections = () => {
       <div className="space-y-16">
         {universities.map((university) => (
           <div key={university.shortName} className="space-y-8">
-            {/* University Header */}
-            <div className="text-center">
-              <h3 className="text-3xl font-bold text-academic-blue mb-2">
-                {university.name}
-              </h3>
-              <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-                {university.description}
-              </p>
-            </div>
+            {/* University Header with custom background */}
+                         <div className={`text-center p-8 rounded-2xl ${
+               university.shortName === 'Wits' 
+                 ? 'bg-blue-950/30 backdrop-blur-sm border border-blue-300/40' 
+                 : university.shortName === 'UJ' 
+                 ? 'bg-orange-500/20 backdrop-blur-sm border border-orange-200/30'
+                 : 'bg-gradient-to-br from-blue-900/20 to-blue-400/20 backdrop-blur-sm border border-blue-200/30'
+             }`}>
+               <h3 className={`text-3xl font-bold mb-2 ${
+                 university.shortName === 'Wits' 
+                   ? 'text-blue-950' 
+                   : university.shortName === 'UJ' 
+                   ? 'text-orange-700'
+                   : 'text-blue-800'
+               }`}>
+                 {university.name}
+               </h3>
+               <p className={`text-lg max-w-2xl mx-auto ${
+                 university.shortName === 'Wits' 
+                   ? 'text-blue-900/90' 
+                   : university.shortName === 'UJ' 
+                   ? 'text-orange-700/80'
+                   : 'text-blue-700/80'
+               }`}>
+                 {university.description}
+               </p>
+             </div>
 
             <div className="grid lg:grid-cols-2 gap-8">
               {/* Campus Tips */}
