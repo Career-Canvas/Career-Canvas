@@ -25,7 +25,7 @@ class APIKeyManager {
         rateLimitHit: false
       },
       {
-        key: "YOUR_FRIEND_API_KEY_HERE", // Replace with your friend's actual key
+        key: "AIzaSyDpO9JaYpezsR8LXoFF_nshcgAe-0fym4A", // Replace with your friend's actual key
         name: "Friend's Key",
         isActive: true,
         lastUsed: new Date(),
