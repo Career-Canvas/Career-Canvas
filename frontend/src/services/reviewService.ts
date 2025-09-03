@@ -6,6 +6,7 @@ export interface ReviewSubmission {
   category: string;
   rating: number;
   author: string;
+  email: string;
 }
 
 export interface FilterResult {
@@ -13,12 +14,7 @@ export interface FilterResult {
   isApproved: boolean;
   reason: string;
   toxicityScores?: {
-    toxic: number;
-    severe_toxic: number;
-    obscene: number;
-    threat: number;
-    insult: number;
-    identity_hate: number;
+    [key: string]: number;
   };
   highestRisk?: {
     category: string;
@@ -27,20 +23,23 @@ export interface FilterResult {
   };
 }
 
+export interface Review {
+    id: number;
+    created_at: string;
+    reviewText: string;
+    universityName: string;
+    category: string;
+    rating: number;
+    author: string;
+    email: string;
+    isApproved: boolean;
+}
+
 export interface ReviewResponse {
   success: boolean;
   message: string;
   data: {
-    review: {
-      id: string;
-      reviewText: string;
-      universityName: string;
-      category: string;
-      rating: number;
-      author: string;
-      timestamp: string;
-      isApproved: boolean;
-    };
+    review: Review;
     filterResult: FilterResult;
   };
 }
@@ -145,6 +144,28 @@ export async function submitReview(reviewData: ReviewSubmission): Promise<Review
 }
 
 /**
+ * Get all approved reviews from the database
+ */
+export async function getReviews(): Promise<Review[]> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/reviews`);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const result = await response.json();
+    if (!result.success) {
+      throw new Error('API returned unsuccessful response for getting reviews.');
+    }
+    return result.data;
+  } catch (error) {
+    console.error('Error fetching reviews:', error);
+    // Return empty array on failure so the UI doesn't crash
+    return [];
+  }
+}
+
+
+/**
  * Check if the review API is healthy
  */
 export async function checkReviewAPIHealth(): Promise<boolean> {
@@ -182,3 +203,4 @@ export function getToxicityCategoryName(category: string): string {
   
   return categoryNames[category] || category.replace('_', ' ');
 }
+

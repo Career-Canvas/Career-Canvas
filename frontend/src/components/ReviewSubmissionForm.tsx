@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Loader2, Shield, AlertTriangle, CheckCircle, XCircle } from "lucide-react";
-import { submitReview, filterReview, type ReviewSubmission, type FilterResult } from "@/services/reviewService";
+import { submitReview, filterReview, type ReviewSubmission, type FilterResult } from "../services/reviewService";
 
 interface ReviewSubmissionFormProps {
   universityName: string;
@@ -34,7 +34,8 @@ export default function ReviewSubmissionForm({ universityName, onReviewSubmitted
     universityName,
     category: "Campus Life",
     rating: 5,
-    author: ""
+    author: "",
+    email: ""
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -70,12 +71,20 @@ export default function ReviewSubmissionForm({ universityName, onReviewSubmitted
       setIsFiltering(false);
     }
   };
+  
+  const isEmailValid = formData.email.toLowerCase().endsWith('.edu');
 
   const handleSubmit = async () => {
-    if (!formData.reviewText.trim() || !formData.author.trim()) {
+    if (!formData.reviewText.trim() || !formData.author.trim() || !formData.email.trim()) {
       setError("Please fill in all required fields.");
       return;
     }
+    
+    if (!isEmailValid) {
+      setError("Please provide a valid .edu email address.");
+      return;
+    }
+
 
     setIsSubmitting(true);
     setError(null);
@@ -89,7 +98,8 @@ export default function ReviewSubmissionForm({ universityName, onReviewSubmitted
       setFormData(prev => ({
         ...prev,
         reviewText: "",
-        author: ""
+        author: "",
+        email: ""
       }));
 
       // Notify parent component
@@ -188,6 +198,20 @@ export default function ReviewSubmissionForm({ universityName, onReviewSubmitted
           />
         </div>
 
+        {/* Email */}
+        <div className="space-y-2">
+          <Label htmlFor="email">University Email *</Label>
+          <Input
+            id="email"
+            type="email"
+            placeholder="e.g. student@university.edu"
+            value={formData.email}
+            onChange={(e) => handleInputChange("email", e.target.value)}
+            className={`bg-white border-gray-300 focus:border-blue-500 focus:ring-blue-500 ${formData.email && !isEmailValid ? 'border-red-500' : ''}`}
+          />
+           <p className="text-xs text-gray-500">Must be a valid .edu email address. This will not be displayed publicly.</p>
+        </div>
+
         {/* AI Filtering Section */}
         {formData.reviewText.trim().length >= 10 && (
           <div className="space-y-3">
@@ -282,7 +306,7 @@ export default function ReviewSubmissionForm({ universityName, onReviewSubmitted
         <Button
           type="button"
           onClick={handleSubmit}
-          disabled={isSubmitting || !formData.reviewText.trim() || !formData.author.trim()}
+          disabled={isSubmitting || !formData.reviewText.trim() || !formData.author.trim() || !isEmailValid}
           className="w-full bg-blue-600 hover:bg-blue-700 text-white"
         >
           {isSubmitting ? (
@@ -304,3 +328,4 @@ export default function ReviewSubmissionForm({ universityName, onReviewSubmitted
     </Card>
   );
 }
+

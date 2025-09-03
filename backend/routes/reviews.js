@@ -1,7 +1,143 @@
 import express from 'express';
 import { filterReview, filterReviewsBatch } from '../services/reviewFilter.js';
+// Correct the import path to go up one directory
+import { supabase } from '../supabaseClient.js';
 
 const router = express.Router();
+
+if (!supabase) {
+    console.error("Supabase client is not available in routes/reviews.js. Check supabaseClient.js and .env file.");
+}
+
+/**
+ * GET /api/reviews
+ * Fetch all approved reviews from the database
+ */
+router.get('/', async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from('reviews')
+      .select('*')
+      .eq('isApproved', true)
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      console.error('Supabase error fetching reviews:', error);
+      throw new Error('Could not fetch reviews from the database.');
+    }
+
+    res.json({
+      success: true,
+      data: data,
+    });
+
+  } catch (error) {
+    console.error('Error fetching reviews:', error);
+    res.status(500).json({
+      error: 'Failed to fetch reviews',
+      message: error.message,
+    });
+  }
+});
+
+
+/**
+ * POST /api/reviews/submit
+ * Submit a review with automatic filtering and save to Supabase
+ */
+router.post('/submit', async (req, res, next) => {
+  if (!supabase) {
+    return next(new Error('Supabase client is not initialized. Check your server logs for errors in supabaseClient.js.'));
+  }
+  try {
+    const { 
+      reviewText, 
+      universityName, 
+      category, 
+      rating, 
+      author,
+      email 
+    } = req.body;
+
+    // Validate required fields
+    if (!reviewText || !universityName || !category || !rating || !author || !email) {
+      return res.status(400).json({
+        error: 'Missing required fields',
+        message: 'Please provide reviewText, universityName, category, rating, author, and email'
+      });
+    }
+    
+    // Validate email format
+    if (!email.toLowerCase().endsWith('.edu')) {
+        return res.status(400).json({
+            error: 'Invalid email',
+            message: 'A valid .edu email address is required to submit a review.'
+        });
+    }
+
+    // Validate rating
+    if (rating < 1 || rating > 5 || !Number.isInteger(rating)) {
+      return res.status(400).json({
+        error: 'Invalid rating',
+        message: 'Rating must be an integer between 1 and 5'
+      });
+    }
+
+    // Filter the review for offensive content
+    const filterResult = await filterReview(reviewText);
+
+    if (filterResult.isOffensive) {
+      return res.status(400).json({
+        error: 'Review rejected',
+        message: filterResult.reason,
+        data: {
+          isOffensive: true,
+          isApproved: false,
+          reason: filterResult.reason,
+          toxicityScores: filterResult.toxicityScores
+        }
+      });
+    }
+
+    // If review passes, save it to Supabase
+    const { data: reviewData, error: dbError } = await supabase
+      .from('reviews')
+      .insert([
+        { 
+          reviewText, 
+          universityName, 
+          category, 
+          rating, 
+          author, 
+          email,
+          isApproved: true 
+        },
+      ])
+      .select()
+      .single();
+
+    if (dbError) {
+      console.error('Supabase error:', dbError);
+      throw new Error('Could not save review to the database.');
+    }
+
+    res.json({
+      success: true,
+      message: 'Review submitted successfully',
+      data: {
+        review: reviewData,
+        filterResult
+      }
+    });
+
+  } catch (error) {
+    console.error('Error submitting review:', error);
+    res.status(500).json({
+      error: 'Failed to submit review',
+      message: error.message
+    });
+  }
+});
 
 /**
  * POST /api/reviews/filter
@@ -34,6 +170,7 @@ router.post('/filter', async (req, res) => {
     });
   }
 });
+
 
 /**
  * POST /api/reviews/filter-batch
@@ -77,82 +214,6 @@ router.post('/filter-batch', async (req, res) => {
   }
 });
 
-/**
- * POST /api/reviews/submit
- * Submit a review with automatic filtering
- */
-router.post('/submit', async (req, res) => {
-  try {
-    const { 
-      reviewText, 
-      universityName, 
-      category, 
-      rating, 
-      author 
-    } = req.body;
-
-    // Validate required fields
-    if (!reviewText || !universityName || !category || !rating || !author) {
-      return res.status(400).json({
-        error: 'Missing required fields',
-        message: 'Please provide reviewText, universityName, category, rating, and author'
-      });
-    }
-
-    // Validate rating
-    if (rating < 1 || rating > 5 || !Number.isInteger(rating)) {
-      return res.status(400).json({
-        error: 'Invalid rating',
-        message: 'Rating must be an integer between 1 and 5'
-      });
-    }
-
-    // Filter the review for offensive content
-    const filterResult = await filterReview(reviewText);
-
-    if (filterResult.isOffensive) {
-      return res.status(400).json({
-        error: 'Review rejected',
-        message: filterResult.reason,
-        data: {
-          isOffensive: true,
-          isApproved: false,
-          reason: filterResult.reason,
-          toxicityScores: filterResult.toxicityScores
-        }
-      });
-    }
-
-    // If review passes filtering, you would typically save it to a database here
-    // For now, we'll just return success
-    const reviewData = {
-      id: Date.now().toString(), // Generate a temporary ID
-      reviewText,
-      universityName,
-      category,
-      rating,
-      author,
-      timestamp: new Date().toISOString(),
-      isApproved: true
-    };
-
-    res.json({
-      success: true,
-      message: 'Review submitted successfully',
-      data: {
-        review: reviewData,
-        filterResult
-      }
-    });
-
-  } catch (error) {
-    console.error('Error submitting review:', error);
-    res.status(500).json({
-      error: 'Failed to submit review',
-      message: error.message
-    });
-  }
-});
 
 /**
  * GET /api/reviews/health
@@ -160,9 +221,10 @@ router.post('/submit', async (req, res) => {
  */
 router.get('/health', async (req, res) => {
   try {
-    // Test the filtering service with a simple, non-offensive text
-    const testResult = await filterReview('This is a test review for health check.');
-    
+    const testResult = await filterReview(
+      'This is a test review for health check.'
+    );
+
     res.json({
       status: 'healthy',
       service: 'Review Filtering API',
@@ -170,18 +232,19 @@ router.get('/health', async (req, res) => {
       testResult: {
         isOffensive: testResult.isOffensive,
         isApproved: testResult.isApproved,
-        reason: testResult.reason
-      }
+        reason: testResult.reason,
+      },
     });
-
   } catch (error) {
     res.status(503).json({
       status: 'unhealthy',
       service: 'Review Filtering API',
       timestamp: new Date().toISOString(),
-      error: error.message
+      error: error.message,
     });
   }
 });
 
+
 export { router as reviewRoutes };
+
