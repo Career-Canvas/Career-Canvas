@@ -12,11 +12,6 @@ interface Course {
   university: string;
   duration: string;
   intake: string;
-  reviews: Array<{
-    rating: number;
-    comment: string;
-    author: string;
-  }>;
 }
 
 interface CourseCardProps {
@@ -25,9 +20,6 @@ interface CourseCardProps {
 }
 
 const CourseCard = ({ course, isMatched = false }: CourseCardProps) => {
-  const averageRating = course.reviews.length > 0 
-    ? course.reviews.reduce((sum, review) => sum + review.rating, 0) / course.reviews.length
-    : 0;
 
   return (
     <Card className={`shadow-card hover:shadow-card-hover transition-all duration-300 ${isMatched ? 'ring-2 ring-success-green border-success-green/20' : ''}`}>
@@ -64,12 +56,6 @@ const CourseCard = ({ course, isMatched = false }: CourseCardProps) => {
               <Users className="w-4 h-4" />
               {course.intake}
             </div>
-            {course.reviews.length > 0 && (
-              <div className="flex items-center gap-1">
-                <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                {averageRating.toFixed(1)} ({course.reviews.length} reviews)
-              </div>
-            )}
           </div>
         </div>
 
@@ -106,32 +92,6 @@ const CourseCard = ({ course, isMatched = false }: CourseCardProps) => {
             <span className="text-sm text-gray-500">Student Experience</span>
           </div>
           <p className="text-gray-700 leading-relaxed mb-4">{course.heartInfo}</p>
-          
-          {course.reviews.length > 0 && (
-            <div className="space-y-3">
-              <h5 className="font-medium text-gray-900">Recent Reviews:</h5>
-              {course.reviews.slice(0, 2).map((review, index) => (
-                <div key={index} className="bg-gray-50 p-3 rounded-lg">
-                  <div className="flex items-center gap-2 mb-2">
-                    <div className="flex">
-                      {[...Array(5)].map((_, i) => (
-                        <Star
-                          key={i}
-                          className={`w-3 h-3 ${
-                            i < review.rating 
-                              ? 'fill-yellow-400 text-yellow-400' 
-                              : 'text-gray-300'
-                          }`}
-                        />
-                      ))}
-                    </div>
-                    <span className="text-xs text-gray-500">- {review.author}</span>
-                  </div>
-                  <p className="text-sm text-gray-700 italic">"{review.comment}"</p>
-                </div>
-              ))}
-            </div>
-          )}
         </div>
       </CardContent>
     </Card>

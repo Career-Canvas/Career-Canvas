@@ -4,15 +4,51 @@ import { Badge } from "@/components/ui/badge";
 import { Star, MapPin, Wifi, Car, Coffee, Heart, MessageCircle } from "lucide-react";
 import { universities, type UniversityInfo } from "@/data/universityData";
 import ReviewSubmissionForm from "./ReviewSubmissionForm";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { getReviews, Review } from "../services/reviewService";
 
 const UniversitySections = () => {
   const [showReviewForm, setShowReviewForm] = useState<string | null>(null);
+  const [reviews, setReviews] = useState<Review[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleReviewSubmit = (universityName: string) => {
+  useEffect(() => {
+    const fetchReviews = async () => {
+      try {
+        setIsLoading(true);
+        const fetchedReviews = await getReviews();
+        setReviews(fetchedReviews);
+        setError(null);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Failed to fetch reviews");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchReviews();
+  }, []);
+
+  const handleReviewSubmit = () => {
     setShowReviewForm(null);
-    // You could add a success message or refresh reviews here
+    // Refetch reviews to show the newly submitted one
+    const fetchReviews = async () => {
+      try {
+        setIsLoading(true);
+        const fetchedReviews = await getReviews();
+        setReviews(fetchedReviews);
+        setError(null);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Failed to fetch reviews");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchReviews();
   };
+
 
   const getCategoryIcon = (category: string) => {
     switch (category.toLowerCase()) {
@@ -110,7 +146,9 @@ const UniversitySections = () => {
                 </CardHeader>
                 <CardContent className="p-6">
                   <div className="space-y-4 mb-6">
-                    {university.generalReviews.map((review, index) => (
+                    {isLoading && <p>Loading reviews...</p>}
+                    {error && <p className="text-red-500">{error}</p>}
+                    {!isLoading && !error && reviews.filter(review => review.universityName === university.name).map((review, index) => (
                       <div key={index} className="border-l-4 border-red-200 pl-4 py-2">
                         <div className="flex items-center justify-between mb-2">
                           <div className="flex items-center gap-2">
@@ -133,7 +171,7 @@ const UniversitySections = () => {
                           </div>
                         </div>
                         <p className="text-sm text-gray-700 italic mb-1">
-                          "{review.comment}"
+                          "{review.reviewText}"
                         </p>
                         <p className="text-xs text-gray-500">- {review.author}</p>
                       </div>
@@ -150,7 +188,7 @@ const UniversitySections = () => {
                       {showReviewForm === university.name ? (
                         <ReviewSubmissionForm 
                           universityName={university.name}
-                          onReviewSubmitted={() => handleReviewSubmit(university.name)}
+                          onReviewSubmitted={() => handleReviewSubmit()}
                         />
                       ) : (
                         <Button

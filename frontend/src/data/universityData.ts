@@ -11,11 +11,6 @@ export interface Course {
   university: string;
   duration: string;
   intake: string;
-  reviews: Array<{
-    rating: number;
-    comment: string;
-    author: string;
-  }>;
 }
 
 export interface UniversityInfo {
@@ -23,12 +18,6 @@ export interface UniversityInfo {
   shortName: string;
   description: string;
   campusTips: string[];
-  generalReviews: Array<{
-    category: string;
-    rating: number;
-    comment: string;
-    author: string;
-  }>;
 }
 
 export const universities: UniversityInfo[] = [
@@ -42,12 +31,6 @@ export const universities: UniversityInfo[] = [
       "🍕 Nandos in Matrix is always busy, try the food trucks near the Great Hall for quicker meals",
       "🏃‍♂️ Download the Wits app for campus maps - you'll get lost without it in your first week!"
     ],
-    generalReviews: [
-      { category: "Campus Life", rating: 4, comment: "Great social scene, lots of societies to join. The lawns are perfect for studying outdoors.", author: "Sarah M." },
-      { category: "Facilities", rating: 3, comment: "Some buildings are old but the new facilities like the Origins Centre are amazing.", author: "Thabo K." },
-      { category: "Food", rating: 4, comment: "Loads of options from Matrix food court to street vendors. Budget-friendly too.", author: "Alex P." },
-      { category: "Transport", rating: 2, comment: "Parking is a nightmare. Use the Wits bus service or Uber if you can afford it.", author: "Jessica L." }
-    ]
   },
   {
     name: "University of Johannesburg",
@@ -59,12 +42,6 @@ export const universities: UniversityInfo[] = [
       "☕ The Kingsway campus has the best coffee at Student Centre - avoid the long lunch queues",
       "🎵 Join a society early! UJ has amazing cultural societies and the music scene is incredible"
     ],
-    generalReviews: [
-      { category: "Academics", rating: 4, comment: "Lecturers are approachable and the practical focus really prepares you for work.", author: "Michael T." },
-      { category: "Campus", rating: 4, comment: "Multiple campuses can be confusing initially but each has its own vibe. APK is my favorite.", author: "Nomsa D." },
-      { category: "Technology", rating: 5, comment: "Everything is digital and efficient. Online portal works great, even WiFi is solid.", author: "Ryan S." },
-      { category: "Social Life", rating: 5, comment: "UJ knows how to party! O-Week is legendary and there's always something happening.", author: "Lerato N." }
-    ]
   },
   {
     name: "University of Cape Town",
@@ -76,12 +53,6 @@ export const universities: UniversityInfo[] = [
       "🍔 Wimpy in Kramer is overpriced, head to Observatory for cheap eats off campus",
       "📖 Jagger Library is beautiful but can be distracting - try Chancellor Oppenheimer for serious studying"
     ],
-    generalReviews: [
-      { category: "Academics", rating: 5, comment: "World-class education but very competitive. The workload is intense but worth it.", author: "Catherine V." },
-      { category: "Location", rating: 5, comment: "Most beautiful campus in the world! Table Mountain views never get old.", author: "David R." },
-      { category: "Cost", rating: 2, comment: "Everything is expensive. Budget carefully for accommodation and food in Cape Town.", author: "Sipho M." },
-      { category: "Research", rating: 5, comment: "Amazing research opportunities even as an undergrad. Professors are world experts.", author: "Emma W." }
-    ]
   }
 ];
 
@@ -98,10 +69,6 @@ export const courses: Course[] = [
     university: "Wits",
     duration: "3 years",
     intake: "February",
-    reviews: [
-      { rating: 5, comment: "Challenging but rewarding. The projects really prepare you for industry work.", author: "Anonymous Student" },
-      { rating: 4, comment: "Great lecturers in the CS department, especially for AI modules. Job prospects are excellent.", author: "Recent Graduate" }
-    ]
   },
   {
     courseName: "BCom Accounting",
@@ -114,10 +81,6 @@ export const courses: Course[] = [
     university: "Wits",
     duration: "3 years",
     intake: "February",
-    reviews: [
-      { rating: 4, comment: "Intensive program but the job security afterward makes it worth it. Great support from lecturers.", author: "Final Year Student" },
-      { rating: 3, comment: "Very theoretical in first year, but gets more practical later. Internship opportunities are good.", author: "Alumni" }
-    ]
   },
   {
     courseName: "BA Psychology",
@@ -130,10 +93,6 @@ export const courses: Course[] = [
     university: "Wits",
     duration: "3 years",
     intake: "February",
-    reviews: [
-      { rating: 5, comment: "Life-changing program. You learn so much about yourself and others. Lecturers are incredibly supportive.", author: "Third Year" },
-      { rating: 4, comment: "Lots of reading but fascinating content. The research methods training is really valuable.", author: "Honours Student" }
-    ]
   },
   {
     courseName: "Bachelor of Architecture",
@@ -146,10 +105,6 @@ export const courses: Course[] = [
     university: "Wits",
     duration: "5 years",
     intake: "February",
-    reviews: [
-      { rating: 5, comment: "Demanding but amazing. You develop incredible problem-solving skills and creativity.", author: "Final Year" },
-      { rating: 4, comment: "Be prepared for long hours and critiques. But seeing your designs come to life is magical.", author: "Alumni Architect" }
-    ]
   },
   {
     courseName: "BSc Engineering (Mechanical)",
@@ -162,10 +117,6 @@ export const courses: Course[] = [
     university: "Wits",
     duration: "4 years",
     intake: "February",
-    reviews: [
-      { rating: 4, comment: "Challenging coursework but incredible job prospects. The practical projects really prepare you well.", author: "Fourth Year" },
-      { rating: 5, comment: "Best engineering program in the country. Facilities are world-class and lecturers are industry experts.", author: "Graduate Engineer" }
-    ]
   },
 
   // UJ Courses
@@ -180,10 +131,6 @@ export const courses: Course[] = [
     university: "UJ",
     duration: "3 years",
     intake: "February & July",
-    reviews: [
-      { rating: 5, comment: "Love the hands-on approach. You build real applications from first year. Great industry connections.", author: "Second Year" },
-      { rating: 4, comment: "Curriculum is very current with industry trends. Lecturers have industry experience which really shows.", author: "Recent Graduate" }
-    ]
   },
   {
     courseName: "BCom Marketing Management",
@@ -196,10 +143,6 @@ export const courses: Course[] = [
     university: "UJ",
     duration: "3 years",
     intake: "February & July",
-    reviews: [
-      { rating: 4, comment: "Creative and practical program. Love working with real clients. Networking opportunities are excellent.", author: "Marketing Graduate" },
-      { rating: 5, comment: "Perfect blend of theory and practice. The digital marketing modules are cutting-edge.", author: "Third Year Student" }
-    ]
   },
   {
     courseName: "BA Social Work",
@@ -212,10 +155,6 @@ export const courses: Course[] = [
     university: "UJ",
     duration: "4 years",
     intake: "February",
-    reviews: [
-      { rating: 5, comment: "Life-changing program. The fieldwork taught me so much about resilience and community strength.", author: "Final Year Student" },
-      { rating: 4, comment: "Emotionally challenging but incredibly rewarding. You graduate knowing you can make a real difference.", author: "Social Worker Alumni" }
-    ]
   },
   {
     courseName: "National Diploma: Fashion Design",
@@ -228,10 +167,6 @@ export const courses: Course[] = [
     university: "UJ",
     duration: "3 years",
     intake: "February",
-    reviews: [
-      { rating: 5, comment: "Living my dream! The facilities are amazing and lecturers are industry professionals. So inspiring.", author: "Second Year Designer" },
-      { rating: 4, comment: "Intense program but you learn everything from sketch to finished garment. Great industry connections.", author: "Fashion Graduate" }
-    ]
   },
   {
     courseName: "BCom Economics and Econometrics",
@@ -244,10 +179,6 @@ export const courses: Course[] = [
     university: "UJ",
     duration: "3 years",
     intake: "February",
-    reviews: [
-      { rating: 4, comment: "Challenging but excellent preparation for postgraduate studies. The quantitative training is invaluable.", author: "Honours Student" },
-      { rating: 4, comment: "Love how theory connects to real-world policy issues. Great preparation for consulting careers.", author: "Economics Graduate" }
-    ]
   },
 
   // UCT Courses  
@@ -262,10 +193,6 @@ export const courses: Course[] = [
     university: "UCT",
     duration: "3 years",
     intake: "February",
-    reviews: [
-      { rating: 5, comment: "World-class education with international recognition. Research opportunities even as an undergrad are amazing.", author: "CS Graduate" },
-      { rating: 4, comment: "Intense program but the support from lecturers is incredible. Job prospects globally are excellent.", author: "Third Year Student" }
-    ]
   },
   {
     courseName: "MBChB Medicine",
@@ -278,10 +205,6 @@ export const courses: Course[] = [
     university: "UCT",
     duration: "6 years",
     intake: "February",
-    reviews: [
-      { rating: 5, comment: "Dream program despite the intensity. Learning from world experts in medicine. The clinical experience is unparalleled.", author: "Fifth Year Med Student" },
-      { rating: 4, comment: "Extremely competitive but incredibly rewarding. The research opportunities are world-class.", author: "Medical Intern" }
-    ]
   },
   {
     courseName: "BA Philosophy, Politics and Economics",
@@ -294,10 +217,6 @@ export const courses: Course[] = [
     university: "UCT",
     duration: "3 years",
     intake: "February",
-    reviews: [
-      { rating: 5, comment: "Intellectually stimulating program that changes how you see the world. Perfect preparation for law school.", author: "PPE Graduate" },
-      { rating: 4, comment: "Love the interdisciplinary approach. Tutorials are intense but incredibly rewarding intellectually.", author: "Second Year PPE" }
-    ]
   },
   {
     courseName: "BSc Engineering (Civil)",
@@ -310,10 +229,6 @@ export const courses: Course[] = [
     university: "UCT",
     duration: "4 years",
     intake: "February",
-    reviews: [
-      { rating: 5, comment: "Excellent program with real-world focus. The field trips and practical projects are highlights.", author: "Civil Engineering Graduate" },
-      { rating: 4, comment: "Challenging coursework but incredible preparation for industry. Lecturers are practicing engineers.", author: "Fourth Year Student" }
-    ]
   },
   {
     courseName: "BA Fine Arts",
@@ -326,9 +241,5 @@ export const courses: Course[] = [
     university: "UCT",
     duration: "3 years",
     intake: "February",
-    reviews: [
-      { rating: 5, comment: "Incredible creative environment with world-class facilities. The artistic community is so supportive and inspiring.", author: "Fine Arts Graduate" },
-      { rating: 4, comment: "Love the freedom to explore different mediums. Lecturers are practicing artists who really mentor you.", author: "Art Student" }
-    ]
   }
 ];
