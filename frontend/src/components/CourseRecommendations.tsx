@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { CheckCircle2, BookOpen, Target, Users } from "lucide-react";
@@ -15,13 +15,20 @@ const CourseRecommendations = ({ apsScore, userSubjects, personalityType }: Cour
   const [matchedCourses, setMatchedCourses] = useState<Course[]>([]);
   const [showRecommendations, setShowRecommendations] = useState(false);
 
+  const personalityGroupMapping = useMemo(() => ({
+    "INTJ": "Analytical", "INTP": "Analytical", "ENTJ": "Analytical", "ENTP": "Analytical",
+    "INFJ": "Social", "INFP": "Social", "ENFJ": "Social", "ENFP": "Creative",
+    "ISTJ": "Practical", "ISFJ": "Practical", "ESTJ": "Practical", "ESFJ": "Social",
+    "ISTP": "Practical", "ISFP": "Creative", "ESTP": "Creative", "ESFP": "Creative"
+  }), []);
+
   useEffect(() => {
     if (apsScore !== null && personalityType && userSubjects.length > 0) {
+      const userPersonalityGroup = personalityGroupMapping[personalityType as keyof typeof personalityGroupMapping];
+
       const matches = courses.filter(course => {
-        // Check APS requirement
         const apsMatch = apsScore >= course.requiredAPS;
         
-        // Check if user has required subjects
         const hasRequiredSubjects = course.requiredSubjects.every(reqSubject =>
           userSubjects.some(userSubject => 
             userSubject.toLowerCase().includes(reqSubject.toLowerCase()) ||
@@ -29,8 +36,7 @@ const CourseRecommendations = ({ apsScore, userSubjects, personalityType }: Cour
           )
         );
         
-        // Check personality match
-        const personalityMatch = course.personalityType === personalityType;
+        const personalityMatch = course.personalityGroup === userPersonalityGroup;
         
         return apsMatch && hasRequiredSubjects && personalityMatch;
       });
@@ -38,7 +44,7 @@ const CourseRecommendations = ({ apsScore, userSubjects, personalityType }: Cour
       setMatchedCourses(matches);
       setShowRecommendations(true);
     }
-  }, [apsScore, userSubjects, personalityType]);
+  }, [apsScore, userSubjects, personalityType, personalityGroupMapping]);
 
   if (!showRecommendations || (apsScore === null || !personalityType)) {
     return (
@@ -56,6 +62,8 @@ const CourseRecommendations = ({ apsScore, userSubjects, personalityType }: Cour
     );
   }
 
+  const userPersonalityGroup = personalityGroupMapping[personalityType as keyof typeof personalityGroupMapping];
+
   return (
     <div className="max-w-7xl mx-auto px-4 py-12">
       <div className="text-center mb-12">
@@ -63,7 +71,7 @@ const CourseRecommendations = ({ apsScore, userSubjects, personalityType }: Cour
           Your Course Recommendations
         </h2>
         <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-          Based on your APS score of <strong>{apsScore}</strong>, your <strong>{personalityType}</strong> personality type, 
+          Based on your APS score of <strong>{apsScore}</strong>, your <strong>{personalityType} ({userPersonalityGroup})</strong> personality type, 
           and your subject choices, here are the perfect matches for you.
         </p>
       </div>
@@ -85,7 +93,7 @@ const CourseRecommendations = ({ apsScore, userSubjects, personalityType }: Cour
           </div>
           <h3 className="font-semibold text-gray-900 mb-2">Personality Type</h3>
           <div className="text-2xl font-bold text-warm-accent">{personalityType}</div>
-          <p className="text-sm text-gray-600">Matched learning style</p>
+          <p className="text-sm text-gray-600">({userPersonalityGroup} Group)</p>
         </Card>
 
         <Card className="text-center p-6">
@@ -139,7 +147,7 @@ const CourseRecommendations = ({ apsScore, userSubjects, personalityType }: Cour
               <h4 className="font-semibold text-gray-700 mb-4">Explore All Available Courses</h4>
               <div className="grid lg:grid-cols-2 gap-6">
                 {courses
-                  .filter(course => course.personalityType === personalityType)
+                  .filter(course => course.personalityGroup === userPersonalityGroup)
                   .slice(0, 4)
                   .map((course, index) => (
                     <CourseCard key={index} course={course} isMatched={false} />

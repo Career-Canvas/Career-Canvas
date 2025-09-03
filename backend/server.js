@@ -1,19 +1,34 @@
+import dotenv from 'dotenv';
+// Load environment variables FIRST - before any other imports
+dotenv.config();
+
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
-import dotenv from 'dotenv';
-
-// Load environment variables FIRST - before any other imports
-dotenv.config();
+import { createClient } from '@supabase/supabase-js';
 
 // Debug: Check if variables are loaded
 console.log('🔍 Environment check:');
 console.log('API Key exists:', !!process.env.GOOGLE_PERSPECTIVE_API_KEY);
+console.log('Supabase URL exists:', !!process.env.SUPABASE_URL);
+console.log('Supabase Key exists:', !!process.env.SUPABASE_ANON_KEY);
 console.log('Frontend URL:', process.env.FRONTEND_URL);
 console.log('Port:', process.env.PORT);
 
-// NOW import routes
+// Initialize Supabase client here, in the main server file
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_ANON_KEY;
+
+if (!supabaseUrl || !supabaseKey) {
+  console.error(
+    '🔥 Supabase URL or Key not found in .env file. Please check your configuration.'
+  );
+}
+
+const supabase = createClient(supabaseUrl, supabaseKey);
+
+// NOW import routes (these routes already use supabase via supabaseClient.js)
 import { reviewRoutes } from './routes/reviews.js';
 
 const app = express();
@@ -26,28 +41,27 @@ app.use(helmet());
 const allowedOrigins = [
   process.env.FRONTEND_URL || 'http://localhost:8000',
   'http://localhost:8080',
-  'http://localhost:3000'
+  'http://localhost:3000',
 ];
 
-app.use(cors({
-  origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps or curl requests)
-    if (!origin) return callback(null, true);
-    
-    if (allowedOrigins.indexOf(origin) !== -1) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  credentials: true
-}));
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
+    credentials: true,
+  })
+);
 
 // Rate limiting
 const limiter = rateLimit({
   windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS) || 15 * 60 * 1000,
   max: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS) || 100,
-  message: 'Too many requests from this IP, please try again later.'
+  message: 'Too many requests from this IP, please try again later.',
 });
 app.use(limiter);
 
@@ -57,22 +71,25 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // Health check endpoint
 app.get('/health', (req, res) => {
-  res.json({ 
-    status: 'OK', 
+  res.json({
+    status: 'OK',
     timestamp: new Date().toISOString(),
-    service: 'Career Canvas Review API'
+    service: 'Career Canvas Review API',
   });
 });
 
-// API routes
+// ✅ Use router directly (no supabase passed here)
 app.use('/api/reviews', reviewRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error('Error:', err);
-  res.status(500).json({ 
+  res.status(500).json({
     error: 'Internal server error',
-    message: process.env.NODE_ENV === 'development' ? err.message : 'Something went wrong'
+    message:
+      process.env.NODE_ENV === 'development'
+        ? err.message
+        : 'Something went wrong',
   });
 });
 
@@ -84,9 +101,18 @@ app.use('*', (req, res) => {
 // Start server
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
-  console.log(`📝 Review filtering API available at http://localhost:${PORT}/api/reviews`);
+  console.log(
+    `📝 Review filtering API available at http://localhost:${PORT}/api/reviews`
+  );
   console.log(`🏥 Health check at http://localhost:${PORT}/health`);
-  console.log(`🔑 API Key loaded: ${process.env.GOOGLE_PERSPECTIVE_API_KEY ? 'YES' : 'NO'}`);
+  console.log(
+    `🔑 Google API Key loaded: ${
+      process.env.GOOGLE_PERSPECTIVE_API_KEY ? 'YES' : 'NO'
+    }`
+  );
+  console.log(
+    `🔑 Supabase URL loaded: ${process.env.SUPABASE_URL ? 'YES' : 'NO'}`
+  );
 });
 
 export default app;
