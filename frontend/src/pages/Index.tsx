@@ -5,6 +5,7 @@ import PersonalityTest from "@/components/PersonalityTest";
 import CourseRecommendations from "@/components/CourseRecommendations";
 import UniversitySections from "@/components/UniversitySections";
 import ChatBot from "@/components/ChatBot";
+import ThemeToggle from "@/components/DarkModeToggle";
 
 const Index = () => {
   const [apsScore, setApsScore] = useState<number | null>(null);
@@ -40,17 +41,22 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      {/* Dark Mode Toggle - Fixed Position */}
+      <div className="fixed top-6 right-6 z-50">
+        <ThemeToggle />
+      </div>
+      
       {/* Hero Section */}
       <CampusHero />
       
       {/* APS Calculator and Personality Test */}
-      <section id="aps-calculator" className="py-16 px-4 bg-gray-50">
+      <section id="aps-calculator" className="py-16 px-4 bg-gray-50 dark:bg-gray-900">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">
+            <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
               Discover Your Perfect Match
             </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
               Let's start by understanding your academic achievements and learning style. 
               This will help us recommend the most suitable courses for you.
             </p>
@@ -89,7 +95,7 @@ const Index = () => {
              {/* Success Message */}
              {showSuccessMessage && (
                <div className="mt-4 animate-in slide-in-from-top-2 duration-300">
-                 <div className="inline-flex items-center px-4 py-2 bg-green-100 border border-green-400 text-green-700 rounded-full">
+                 <div className="inline-flex items-center px-4 py-2 bg-green-100 dark:bg-green-900 border border-green-400 dark:border-green-600 text-green-700 dark:text-green-300 rounded-full">
                    <span className="mr-2">✅</span>
                    <span className="text-sm font-medium">
                      Results locked in! Your AI guide has been updated with your latest information.
@@ -102,7 +108,7 @@ const Index = () => {
       </section>
 
       {/* Course Recommendations */}
-      <section className="py-16 bg-white">
+      <section className="py-16 bg-white dark:bg-gray-800">
         <CourseRecommendations 
           apsScore={apsScore}
           userSubjects={userSubjects}
@@ -111,7 +117,7 @@ const Index = () => {
       </section>
 
       {/* University Sections */}
-      <section id="university-sections" className="py-16 bg-gray-50">
+      <section id="university-sections" className="py-16 bg-gray-50 dark:bg-gray-900">
         <UniversitySections />
       </section>
 

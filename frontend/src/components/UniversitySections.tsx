@@ -68,10 +68,10 @@ const UniversitySections = () => {
   return (
     <div className="max-w-7xl mx-auto px-4 py-16">
       <div className="text-center mb-16">
-        <h2 className="text-4xl font-bold text-gray-900 mb-4">
+        <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
           University Campus Life
         </h2>
-        <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+        <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
           Get the inside scoop on campus life, facilities, and student experiences at South Africa's top universities.
         </p>
       </div>
@@ -89,19 +89,19 @@ const UniversitySections = () => {
              }`}>
                <h3 className={`text-3xl font-bold mb-2 ${
                  university.shortName === 'Wits' 
-                   ? 'text-blue-950' 
+                   ? 'text-blue-950 dark:text-blue-200' 
                    : university.shortName === 'UJ' 
-                   ? 'text-orange-700'
-                   : 'text-blue-800'
+                   ? 'text-orange-700 dark:text-orange-300'
+                   : 'text-blue-800 dark:text-blue-200'
                }`}>
                  {university.name}
                </h3>
                <p className={`text-lg max-w-2xl mx-auto ${
                  university.shortName === 'Wits' 
-                   ? 'text-blue-900/90' 
+                   ? 'text-blue-900/90 dark:text-blue-200/90' 
                    : university.shortName === 'UJ' 
-                   ? 'text-orange-700/80'
-                   : 'text-blue-700/80'
+                   ? 'text-orange-700/80 dark:text-orange-300/80'
+                   : 'text-blue-700/80 dark:text-blue-200/80'
                }`}>
                  {university.description}
                </p>
@@ -121,14 +121,14 @@ const UniversitySections = () => {
                 </CardHeader>
                 <CardContent className="p-6">
                   <div className="space-y-4">
-                    {university.campusTips.map((tip, index) => (
-                      <div key={index} className="flex gap-3 p-3 bg-gray-50 rounded-lg">
-                        <span className="text-warm-accent font-medium text-sm mt-1">
-                          {String(index + 1).padStart(2, '0')}
-                        </span>
-                        <p className="text-gray-700 text-sm leading-relaxed">{tip}</p>
-                      </div>
-                    ))}
+                                         {university.campusTips.map((tip, index) => (
+                       <div key={index} className="flex gap-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                         <span className="text-warm-accent font-medium text-sm mt-1">
+                           {String(index + 1).padStart(2, '0')}
+                         </span>
+                         <p className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">{tip}</p>
+                       </div>
+                     ))}
                   </div>
                 </CardContent>
               </Card>
@@ -157,30 +157,30 @@ const UniversitySections = () => {
                               {review.category}
                             </Badge>
                           </div>
-                          <div className="flex items-center gap-1">
-                            {[...Array(5)].map((_, i) => (
-                              <Star
-                                key={i}
-                                className={`w-3 h-3 ${
-                                  i < review.rating 
-                                    ? 'fill-yellow-400 text-yellow-400' 
-                                    : 'text-gray-300'
-                                }`}
-                              />
-                            ))}
-                          </div>
+                                                     <div className="flex items-center gap-1">
+                             {[...Array(5)].map((_, i) => (
+                               <Star
+                                 key={i}
+                                 className={`w-3 h-3 ${
+                                   i < review.rating 
+                                     ? 'fill-yellow-400 text-yellow-400' 
+                                     : 'text-gray-300 dark:text-gray-500'
+                                 }`}
+                               />
+                             ))}
+                           </div>
                         </div>
-                        <p className="text-sm text-gray-700 italic mb-1">
+                        <p className="text-sm text-gray-700 dark:text-gray-300 italic mb-1">
                           "{review.reviewText}"
                         </p>
-                        <p className="text-xs text-gray-500">- {review.author}</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">- {review.author}</p>
                       </div>
                     ))}
                   </div>
 
                   {/* Review Submission Form */}
                   <div className="border-t pt-4">
-                    <h4 className="font-medium text-gray-900 mb-3 flex items-center gap-2">
+                    <h4 className="font-medium text-gray-900 dark:text-white mb-3 flex items-center gap-2">
                       <MessageCircle className="w-4 h-4" />
                       Share Your Experience
                     </h4>
@@ -207,9 +207,9 @@ const UniversitySections = () => {
 
             {/* Divider */}
             {university !== universities[universities.length - 1] && (
-              <div className="flex items-center justify-center py-8">
-                <div className="h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent w-full max-w-md"></div>
-              </div>
+                           <div className="flex items-center justify-center py-8">
+               <div className="h-px bg-gradient-to-r from-transparent via-gray-300 dark:via-gray-600 to-transparent w-full max-w-md"></div>
+             </div>
             )}
           </div>
         ))}

@@ -275,7 +275,7 @@ const PersonalityTest = ({ onPersonalityDetermined }: PersonalityTestProps) => {
             <div className="p-6 bg-warm-accent-light border border-warm-accent/20 rounded-lg">
               <div className="flex items-center gap-3 mb-4">
                 <CheckCircle2 className="w-6 h-6 text-warm-accent" />
-                <h3 className="text-lg font-semibold text-gray-900">Your Personality Type</h3>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Your Personality Type</h3>
               </div>
               
               <div className="flex items-center gap-4 mb-4">
@@ -283,12 +283,12 @@ const PersonalityTest = ({ onPersonalityDetermined }: PersonalityTestProps) => {
                   className: `w-12 h-12 ${personalityDescriptions[personalityType as keyof typeof personalityDescriptions].color}`
                 })}
                 <div>
-                  <div className="text-2xl font-bold text-gray-900">{personalityType} - {personalityDescriptions[personalityType as keyof typeof personalityDescriptions].title}</div>
-                  <div className="text-sm text-gray-600">Personality Type</div>
+                  <div className="text-2xl font-bold text-gray-900 dark:text-white">{personalityType} - {personalityDescriptions[personalityType as keyof typeof personalityDescriptions].title}</div>
+                  <div className="text-sm text-gray-600 dark:text-gray-300">Personality Type</div>
                 </div>
               </div>
               
-              <p className="text-gray-700 leading-relaxed">
+              <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
                 {personalityDescriptions[personalityType as keyof typeof personalityDescriptions].description}
               </p>
             </div>
@@ -301,11 +301,11 @@ const PersonalityTest = ({ onPersonalityDetermined }: PersonalityTestProps) => {
           <>
             <div className="mb-6">
               <div className="flex justify-between items-center mb-2">
-                <span className="text-sm font-medium text-gray-700">Progress</span>
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Progress</span>
                 <span className="text-sm font-semibold text-academic-blue">{Math.round(progress)}%</span>
               </div>
               <Progress value={progress} />
-              <p className="text-center text-xs text-gray-500 mt-2">Page {currentPage} of {totalPages}</p>
+              <p className="text-center text-xs text-gray-500 dark:text-gray-400 mt-2">Page {currentPage} of {totalPages}</p>
             </div>
             
             <div className="space-y-8">
@@ -315,7 +315,7 @@ const PersonalityTest = ({ onPersonalityDetermined }: PersonalityTestProps) => {
                     <span className="flex-shrink-0 w-8 h-8 bg-academic-blue text-white rounded-full flex items-center justify-center text-sm font-semibold">
                       {startIndex + index + 1}
                     </span>
-                    <h3 className="font-medium text-gray-900 leading-6">{question.question}</h3>
+                    <h3 className="font-medium text-gray-900 dark:text-white leading-6">{question.question}</h3>
                   </div>
                   
                   <RadioGroup

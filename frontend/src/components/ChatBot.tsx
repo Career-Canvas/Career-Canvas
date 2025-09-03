@@ -379,7 +379,7 @@ ${apsScore !== null ? `\n🔍 **Debug Info**: I can see your APS score is ${apsS
 
   return (
     <div className="fixed bottom-6 right-6 z-50 w-96 max-w-[calc(100vw-2rem)]">
-      <Card className="shadow-2xl border-0 bg-white/95 backdrop-blur-sm">
+      <Card className="shadow-2xl border-0 bg-white/95 dark:bg-gray-800/95 backdrop-blur-sm">
         <CardHeader className="pb-3">
           <div className="flex items-center justify-between">
             <CardTitle className="text-lg font-semibold text-primary">
@@ -391,7 +391,7 @@ ${apsScore !== null ? `\n🔍 **Debug Info**: I can see your APS score is ${apsS
                 variant="ghost"
                 size="sm"
                 onClick={resetConversation}
-                className="h-8 w-8 p-0 hover:bg-gray-100"
+                className="h-8 w-8 p-0 hover:bg-gray-100 dark:hover:bg-gray-700"
                 title="Reset conversation"
               >
                 <RefreshCw className="w-4 h-4" />
@@ -411,12 +411,12 @@ ${apsScore !== null ? `\n🔍 **Debug Info**: I can see your APS score is ${apsS
         <CardContent className="p-0">
           {/* Data Updated Notification */}
           {showDataUpdated && (
-            <div className="p-3 bg-blue-50 border-b border-blue-200">
-              <div className="flex items-center space-x-2 text-blue-700">
-                <span className="text-blue-600">🔄</span>
+            <div className="p-3 bg-blue-50 dark:bg-blue-900/50 border-b border-blue-200 dark:border-blue-700">
+              <div className="flex items-center space-x-2 text-blue-700 dark:text-blue-300">
+                <span className="text-blue-600 dark:text-blue-400">🔄</span>
                 <span className="text-sm font-medium">Your data has been updated!</span>
               </div>
-              <p className="text-xs text-blue-600 mt-1">
+              <p className="text-xs text-blue-600 dark:text-blue-400 mt-1">
                 {apsScore !== null && `APS Score: ${apsScore}`}
                 {apsScore !== null && personalityType !== null && ' • '}
                 {personalityType !== null && `Personality: ${personalityType}`}
@@ -434,7 +434,7 @@ ${apsScore !== null ? `\n🔍 **Debug Info**: I can see your APS score is ${apsS
                   className={`max-w-[80%] p-3 rounded-lg text-sm ${
                     message.isUser
                       ? "bg-primary text-primary-foreground"
-                      : "bg-gray-100 text-gray-800"
+                      : "bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200"
                   }`}
                 >
                   {message.content}
@@ -443,30 +443,30 @@ ${apsScore !== null ? `\n🔍 **Debug Info**: I can see your APS score is ${apsS
             ))}
             {isLoading && (
               <div className="flex justify-start">
-                <div className="bg-gradient-to-r from-blue-50 to-purple-50 p-4 rounded-lg border border-blue-200 shadow-sm">
+                <div className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/50 dark:to-purple-900/50 p-4 rounded-lg border border-blue-200 dark:border-blue-700 shadow-sm">
                   <div className="flex items-center space-x-3">
                     <div className="relative">
                       <div className="w-6 h-6 border-2 border-blue-300 border-t-blue-600 rounded-full animate-spin"></div>
                       <div className="absolute inset-0 w-6 h-6 border-2 border-transparent border-t-blue-400 rounded-full animate-ping"></div>
                     </div>
-                    <div className="flex space-x-1">
-                      <span className="text-blue-600 font-medium">Thinking</span>
-                      <div className="flex space-x-1">
-                        <div className="w-1 h-1 bg-blue-400 rounded-full animate-bounce"></div>
-                        <div className="w-1 h-1 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: "0.1s" }}></div>
-                        <div className="w-1 h-1 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: "0.2s" }}></div>
-                      </div>
-                    </div>
-                  </div>
-                  <p className="text-xs text-blue-500 mt-2 italic">Analyzing your data and finding the perfect courses...</p>
-                  <p className="text-xs text-blue-400 mt-1">This may take up to 12 seconds...</p>
+                                         <div className="flex space-x-1">
+                       <span className="text-blue-600 dark:text-blue-400 font-medium">Thinking</span>
+                       <div className="flex space-x-1">
+                         <div className="w-1 h-1 bg-blue-400 dark:bg-blue-500 rounded-full animate-bounce"></div>
+                         <div className="w-1 h-1 bg-blue-400 dark:bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: "0.1s" }}></div>
+                         <div className="w-1 h-1 bg-blue-400 dark:bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: "0.2s" }}></div>
+                       </div>
+                     </div>
+                   </div>
+                   <p className="text-xs text-blue-500 dark:text-blue-400 mt-2 italic">Analyzing your data and finding the perfect courses...</p>
+                   <p className="text-xs text-blue-400 dark:text-blue-500 mt-1">This may take up to 12 seconds...</p>
                 </div>
               </div>
             )}
             <div ref={messagesEndRef} />
           </div>
 
-          <div className="p-4 border-t">
+                     <div className="p-4 border-t border-gray-200 dark:border-gray-700">
             <div className="flex gap-2">
               <Input
                 value={inputMessage}
@@ -484,9 +484,9 @@ ${apsScore !== null ? `\n🔍 **Debug Info**: I can see your APS score is ${apsS
                 <Send className="w-4 h-4" />
               </Button>
             </div>
-            <div className="mt-2 text-xs text-gray-500 text-center">
-              💡 Tip: Ask complete questions for better responses • {retryCount > 0 && `Retries: ${retryCount}`}
-            </div>
+                         <div className="mt-2 text-xs text-gray-500 dark:text-gray-400 text-center">
+               💡 Tip: Ask complete questions for better responses • {retryCount > 0 && `Retries: ${retryCount}`}
+             </div>
           </div>
         </CardContent>
       </Card>

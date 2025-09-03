@@ -51,9 +51,9 @@ const CourseRecommendations = ({ apsScore, userSubjects, personalityType }: Cour
       <div className="max-w-4xl mx-auto px-4 py-12">
         <Card className="text-center p-12 shadow-card">
           <div className="space-y-4">
-            <BookOpen className="w-16 h-16 text-gray-400 mx-auto" />
-            <h3 className="text-xl font-semibold text-gray-600">Ready to Find Your Perfect Course?</h3>
-            <p className="text-gray-500 max-w-md mx-auto">
+            <BookOpen className="w-16 h-16 text-gray-400 dark:text-gray-500 mx-auto" />
+            <h3 className="text-xl font-semibold text-gray-600 dark:text-gray-300">Ready to Find Your Perfect Course?</h3>
+            <p className="text-gray-500 dark:text-gray-400 max-w-md mx-auto">
               Complete your APS calculation and personality assessment above to discover courses that match your academic qualifications and learning style.
             </p>
           </div>
@@ -67,10 +67,10 @@ const CourseRecommendations = ({ apsScore, userSubjects, personalityType }: Cour
   return (
     <div className="max-w-7xl mx-auto px-4 py-12">
       <div className="text-center mb-12">
-        <h2 className="text-4xl font-bold text-gray-900 mb-4">
+        <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
           Your Course Recommendations
         </h2>
-        <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+        <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
           Based on your APS score of <strong>{apsScore}</strong>, your <strong>{personalityType} ({userPersonalityGroup})</strong> personality type, 
           and your subject choices, here are the perfect matches for you.
         </p>
@@ -82,27 +82,27 @@ const CourseRecommendations = ({ apsScore, userSubjects, personalityType }: Cour
           <div className="bg-success-green-light p-3 rounded-full w-fit mx-auto mb-4">
             <Target className="w-8 h-8 text-success-green" />
           </div>
-          <h3 className="font-semibold text-gray-900 mb-2">APS Score</h3>
+          <h3 className="font-semibold text-gray-900 dark:text-white mb-2">APS Score</h3>
           <div className="text-2xl font-bold text-success-green">{apsScore}</div>
-          <p className="text-sm text-gray-600">Meets {matchedCourses.length} course requirements</p>
+          <p className="text-sm text-gray-600 dark:text-gray-300">Meets {matchedCourses.length} course requirements</p>
         </Card>
 
         <Card className="text-center p-6">
           <div className="bg-warm-accent-light p-3 rounded-full w-fit mx-auto mb-4">
             <Users className="w-8 h-8 text-warm-accent" />
           </div>
-          <h3 className="font-semibold text-gray-900 mb-2">Personality Type</h3>
+          <h3 className="font-semibold text-gray-900 dark:text-white mb-2">Personality Type</h3>
           <div className="text-2xl font-bold text-warm-accent">{personalityType}</div>
-          <p className="text-sm text-gray-600">({userPersonalityGroup} Group)</p>
+          <p className="text-sm text-gray-600 dark:text-gray-300">({userPersonalityGroup} Group)</p>
         </Card>
 
         <Card className="text-center p-6">
           <div className="bg-academic-blue-light p-3 rounded-full w-fit mx-auto mb-4">
             <CheckCircle2 className="w-8 h-8 text-academic-blue" />
           </div>
-          <h3 className="font-semibold text-gray-900 mb-2">Perfect Matches</h3>
+          <h3 className="font-semibold text-gray-900 dark:text-white mb-2">Perfect Matches</h3>
           <div className="text-2xl font-bold text-academic-blue">{matchedCourses.length}</div>
-          <p className="text-sm text-gray-600">Courses found for you</p>
+          <p className="text-sm text-gray-600 dark:text-gray-300">Courses found for you</p>
         </Card>
       </div>
 
@@ -111,7 +111,7 @@ const CourseRecommendations = ({ apsScore, userSubjects, personalityType }: Cour
         <div className="space-y-8">
           <div className="flex items-center gap-2 mb-6">
             <CheckCircle2 className="w-6 h-6 text-success-green" />
-            <h3 className="text-2xl font-semibold text-gray-900">Perfect Matches for You</h3>
+            <h3 className="text-2xl font-semibold text-gray-900 dark:text-white">Perfect Matches for You</h3>
             <Badge className="bg-success-green text-white">
               {matchedCourses.length} {matchedCourses.length === 1 ? 'Course' : 'Courses'}
             </Badge>
@@ -126,9 +126,9 @@ const CourseRecommendations = ({ apsScore, userSubjects, personalityType }: Cour
       ) : (
         <Card className="text-center p-12">
           <div className="space-y-4">
-            <Target className="w-16 h-16 text-gray-400 mx-auto" />
-            <h3 className="text-xl font-semibold text-gray-600">No Perfect Matches Found</h3>
-            <div className="space-y-2 text-gray-500 max-w-2xl mx-auto">
+            <Target className="w-16 h-16 text-gray-400 dark:text-gray-500 mx-auto" />
+            <h3 className="text-xl font-semibold text-gray-600 dark:text-gray-300">No Perfect Matches Found</h3>
+            <div className="space-y-2 text-gray-500 dark:text-gray-400 max-w-2xl mx-auto">
               <p>
                 Based on your current APS score ({apsScore}), subjects, and {personalityType} personality type, 
                 we couldn't find courses that match all your criteria.
@@ -144,7 +144,7 @@ const CourseRecommendations = ({ apsScore, userSubjects, personalityType }: Cour
             </div>
             
             <div className="mt-8">
-              <h4 className="font-semibold text-gray-700 mb-4">Explore All Available Courses</h4>
+              <h4 className="font-semibold text-gray-700 dark:text-gray-300 mb-4">Explore All Available Courses</h4>
               <div className="grid lg:grid-cols-2 gap-6">
                 {courses
                   .filter(course => course.personalityGroup === userPersonalityGroup)

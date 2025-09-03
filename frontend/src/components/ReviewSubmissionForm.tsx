@@ -113,38 +113,38 @@ export default function ReviewSubmissionForm({ universityName, onReviewSubmitted
     }
   };
 
-  const getToxicityColor = (score: number) => {
-    if (score < 0.3) return "bg-green-100 text-green-800";
-    if (score < 0.6) return "bg-yellow-100 text-yellow-800";
-    if (score < 0.8) return "bg-orange-100 text-orange-800";
-    return "bg-red-100 text-red-800";
-  };
+     const getToxicityColor = (score: number) => {
+     if (score < 0.3) return "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-200";
+     if (score < 0.6) return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-200";
+     if (score < 0.8) return "bg-orange-100 text-orange-800 dark:bg-orange-900/20 dark:text-orange-200";
+     return "bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-200";
+   };
 
   return (
     <Card className="w-full max-w-2xl mx-auto">
-      <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50">
-        <CardTitle className="flex items-center gap-2 text-blue-900">
-          <Shield className="w-5 h-5" />
-          Submit Your Review
-        </CardTitle>
-        <CardDescription>
-          Share your experience at {universityName}. All reviews are automatically filtered for appropriate content.
-        </CardDescription>
-      </CardHeader>
+             <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30">
+         <CardTitle className="flex items-center gap-2 text-blue-900 dark:text-blue-100">
+           <Shield className="w-5 h-5" />
+           Submit Your Review
+         </CardTitle>
+         <CardDescription className="text-blue-700 dark:text-blue-200">
+           Share your experience at {universityName}. All reviews are automatically filtered for appropriate content.
+         </CardDescription>
+       </CardHeader>
       
       <CardContent className="p-6 space-y-6">
         {/* Review Text */}
         <div className="space-y-2">
           <Label htmlFor="reviewText">Your Review *</Label>
-          <Textarea
-            id="reviewText"
-            placeholder="Tell future students about your experience at this university..."
-            value={formData.reviewText}
-            onChange={(e) => handleInputChange("reviewText", e.target.value)}
-            className="min-h-[100px] resize-none bg-white border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-            maxLength={1000}
-          />
-          <div className="flex justify-between items-center text-sm text-gray-500">
+                     <Textarea
+             id="reviewText"
+             placeholder="Tell future students about your experience at this university..."
+             value={formData.reviewText}
+             onChange={(e) => handleInputChange("reviewText", e.target.value)}
+             className="min-h-[100px] resize-none bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-500 text-gray-900 dark:text-white"
+             maxLength={1000}
+           />
+          <div className="flex justify-between items-center text-sm text-gray-500 dark:text-gray-400">
             <span>Minimum 10 characters</span>
             <span>{formData.reviewText.length}/1000</span>
           </div>
@@ -154,62 +154,62 @@ export default function ReviewSubmissionForm({ universityName, onReviewSubmitted
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label htmlFor="category">Category</Label>
-            <Select value={formData.category} onValueChange={(value) => handleInputChange("category", value)}>
-              <SelectTrigger className="bg-white border-gray-300 focus:border-blue-500 focus:ring-blue-500">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent className="bg-white border-gray-300">
-                {REVIEW_CATEGORIES.map((category) => (
-                  <SelectItem key={category} value={category} className="hover:bg-gray-50">
-                    {category}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+                         <Select value={formData.category} onValueChange={(value) => handleInputChange("category", value)}>
+               <SelectTrigger className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-500 text-gray-900 dark:text-white">
+                 <SelectValue />
+               </SelectTrigger>
+               <SelectContent className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600">
+                 {REVIEW_CATEGORIES.map((category) => (
+                   <SelectItem key={category} value={category} className="hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-900 dark:text-white">
+                     {category}
+                   </SelectItem>
+                 ))}
+               </SelectContent>
+             </Select>
           </div>
           
           <div className="space-y-2">
             <Label htmlFor="rating">Rating</Label>
-            <Select value={formData.rating.toString()} onValueChange={(value) => handleInputChange("rating", parseInt(value))}>
-              <SelectTrigger className="bg-white border-gray-300 focus:border-blue-500 focus:ring-blue-500">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent className="bg-white border-gray-300">
-                {[5, 4, 3, 2, 1].map((rating) => (
-                  <SelectItem key={rating} value={rating.toString()} className="hover:bg-gray-50">
-                    {rating} Star{rating !== 1 ? 's' : ''}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+                         <Select value={formData.rating.toString()} onValueChange={(value) => handleInputChange("rating", parseInt(value))}>
+               <SelectTrigger className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-500 text-gray-900 dark:text-white">
+                 <SelectValue />
+               </SelectTrigger>
+               <SelectContent className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600">
+                 {[5, 4, 3, 2, 1].map((rating) => (
+                   <SelectItem key={rating} value={rating.toString()} className="hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-900 dark:text-white">
+                     {rating} Star{rating !== 1 ? 's' : ''}
+                   </SelectItem>
+                 ))}
+               </SelectContent>
+             </Select>
           </div>
         </div>
 
         {/* Author Name */}
         <div className="space-y-2">
           <Label htmlFor="author">Your Name *</Label>
-          <Input
-            id="author"
-            placeholder="Enter your name (will be displayed publicly)"
-            value={formData.author}
-            onChange={(e) => handleInputChange("author", e.target.value)}
-            className="bg-white border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-            maxLength={50}
-          />
+                     <Input
+             id="author"
+             placeholder="Enter your name (will be displayed publicly)"
+             value={formData.author}
+             onChange={(e) => handleInputChange("author", e.target.value)}
+             className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-500 text-gray-900 dark:text-white"
+             maxLength={50}
+           />
         </div>
 
         {/* Email */}
         <div className="space-y-2">
           <Label htmlFor="email">University Email *</Label>
-          <Input
-            id="email"
-            type="email"
-            placeholder="e.g. student@university.edu"
-            value={formData.email}
-            onChange={(e) => handleInputChange("email", e.target.value)}
-            className={`bg-white border-gray-300 focus:border-blue-500 focus:ring-blue-500 ${formData.email && !isEmailValid ? 'border-red-500' : ''}`}
-          />
-           <p className="text-xs text-gray-500">Must be a valid .edu email address. This will not be displayed publicly.</p>
+                     <Input
+             id="email"
+             type="email"
+             placeholder="e.g. student@university.edu"
+             value={formData.email}
+             onChange={(e) => handleInputChange("email", e.target.value)}
+             className={`bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-500 text-gray-900 dark:text-white ${formData.email && !isEmailValid ? 'border-red-500' : ''}`}
+           />
+           <p className="text-xs text-gray-500 dark:text-gray-400">Must be a valid .edu email address. This will not be displayed publicly.</p>
         </div>
 
         {/* AI Filtering Section */}
@@ -240,33 +240,33 @@ export default function ReviewSubmissionForm({ universityName, onReviewSubmitted
             </div>
 
             {filterResult && (
-              <div className={`p-3 rounded-lg border ${
-                filterResult.isOffensive 
-                  ? 'border-red-200 bg-red-50' 
-                  : 'border-green-200 bg-green-50'
-              }`}>
-                <div className="flex items-center gap-2 mb-2">
-                  {filterResult.isOffensive ? (
-                    <XCircle className="w-4 h-4 text-red-600" />
-                  ) : (
-                    <CheckCircle className="w-4 h-4 text-green-600" />
-                  )}
-                  <span className={`font-medium ${
-                    filterResult.isOffensive ? 'text-red-800' : 'text-green-800'
-                  }`}>
-                    {filterResult.isOffensive ? 'Content Flagged' : 'Content Approved'}
-                  </span>
-                </div>
-                
-                <p className={`text-sm ${
-                  filterResult.isOffensive ? 'text-red-700' : 'text-green-700'
-                }`}>
-                  {filterResult.reason}
-                </p>
+                             <div className={`p-3 rounded-lg border ${
+                 filterResult.isOffensive 
+                   ? 'border-red-200 bg-red-50 dark:border-red-600 dark:bg-red-900/20' 
+                   : 'border-green-200 bg-green-50 dark:border-green-600 dark:bg-green-900/20'
+               }`}>
+                 <div className="flex items-center gap-2 mb-2">
+                   {filterResult.isOffensive ? (
+                     <XCircle className="w-4 h-4 text-red-600" />
+                   ) : (
+                     <CheckCircle className="w-4 h-4 text-green-600" />
+                   )}
+                   <span className={`font-medium ${
+                     filterResult.isOffensive ? 'text-red-800 dark:text-red-200' : 'text-green-800 dark:text-green-200'
+                   }`}>
+                     {filterResult.isOffensive ? 'Content Flagged' : 'Content Approved'}
+                   </span>
+                 </div>
+                 
+                 <p className={`text-sm ${
+                   filterResult.isOffensive ? 'text-red-700 dark:text-red-300' : 'text-green-700 dark:text-green-300'
+                 }`}>
+                   {filterResult.reason}
+                 </p>
 
                 {filterResult.toxicityScores && (
                   <div className="mt-3 space-y-2">
-                    <p className="text-xs font-medium text-gray-600">Toxicity Analysis:</p>
+                                         <p className="text-xs font-medium text-gray-600 dark:text-gray-300">Toxicity Analysis:</p>
                                          <div className="grid grid-cols-2 gap-2">
                        {Object.entries(filterResult.toxicityScores).map(([category, score]) => (
                          <div key={category} className="flex justify-between items-center text-xs">
@@ -294,9 +294,9 @@ export default function ReviewSubmissionForm({ universityName, onReviewSubmitted
 
         {/* Success Display */}
         {success && (
-          <Alert className="border-green-200 bg-green-50">
+          <Alert className="border-green-200 bg-green-50 dark:border-green-600 dark:bg-green-900/20">
             <CheckCircle className="h-4 w-4 text-green-600" />
-            <AlertDescription className="text-green-800">
+            <AlertDescription className="text-green-800 dark:text-green-200">
               Review submitted successfully! Thank you for sharing your experience.
             </AlertDescription>
           </Alert>
@@ -320,7 +320,7 @@ export default function ReviewSubmissionForm({ universityName, onReviewSubmitted
         </Button>
 
         {/* Info Note */}
-        <div className="text-xs text-gray-500 text-center">
+        <div className="text-xs text-gray-500 dark:text-gray-400 text-center">
           <Shield className="w-3 h-3 inline mr-1" />
           All reviews are automatically filtered using AI to ensure appropriate content.
         </div>

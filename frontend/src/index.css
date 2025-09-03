@@ -105,6 +105,30 @@ All colors MUST be HSL.
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
     --ring: 212.7 26.8% 83.9%;
+
+    /* Career Canvas Design Tokens - Dark Mode */
+    --academic-blue: 214 100% 70%;
+    --academic-blue-light: 214 100% 20%;
+    --warm-accent: 43 96% 70%;
+    --warm-accent-light: 43 100% 20%;
+    --success-green: 142 71% 60%;
+    --success-green-light: 142 76% 20%;
+    
+    /* Gradients - Dark Mode */
+    --gradient-hero: linear-gradient(135deg, hsl(214 100% 70%), hsl(219 78% 60%));
+    --gradient-card: linear-gradient(145deg, hsl(222.2 84% 4.9%), hsl(217.2 32.6% 17.5%));
+    --gradient-accent: linear-gradient(135deg, hsl(43 96% 70%), hsl(38 92% 60%));
+    
+      /* Shadows - Dark Mode */
+  --shadow-card: 0 4px 6px -1px hsl(0 0% 0% / 0.3), 0 2px 4px -1px hsl(0 0% 0% / 0.2);
+  --shadow-card-hover: 0 20px 25px -5px hsl(0 0% 0% / 0.4), 0 10px 10px -5px hsl(0 0% 0% / 0.3);
+  --shadow-button: 0 4px 14px 0 hsl(214 100% 70% / 0.4);
+
+  /* Dropdown Styling for Dark Mode */
+  --dropdown-bg: hsl(222.2 84% 4.9%);
+  --dropdown-text: hsl(210 40% 98%);
+  --dropdown-border: hsl(217.2 32.6% 17.5%);
+
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;
@@ -124,4 +148,69 @@ All colors MUST be HSL.
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* Dark Mode Dropdown Styling */
+.dark select option {
+  background-color: hsl(222.2 84% 4.9%) !important;
+  color: hsl(210 40% 98%) !important;
+}
+
+.dark select {
+  background-color: hsl(222.2 84% 4.9%) !important;
+  color: hsl(210 40% 98%) !important;
+  border-color: hsl(217.2 32.6% 17.5%) !important;
+}
+
+/* Ensure dropdown options are visible in all browsers */
+select option {
+  background-color: white;
+  color: #111827;
+}
+
+.dark select option {
+  background-color: #1f2937 !important;
+  color: #f9fafb !important;
+}
+
+/* Shadcn UI Select Dark Mode Overrides */
+.dark [data-radix-select-content] {
+  background-color: hsl(222.2 84% 4.9%) !important;
+  border-color: hsl(217.2 32.6% 17.5%) !important;
+}
+
+.dark [data-radix-select-item] {
+  color: hsl(210 40% 98%) !important;
+}
+
+.dark [data-radix-select-item]:hover {
+  background-color: hsl(217.2 32.6% 17.5%) !important;
+}
+
+.dark [data-radix-select-trigger] {
+  background-color: hsl(222.2 84% 4.9%) !important;
+  color: hsl(210 40% 98%) !important;
+  border-color: hsl(217.2 32.6% 17.5%) !important;
+}
+
+/* Shadcn UI Input Dark Mode Overrides */
+.dark input[type="number"],
+.dark input[type="text"],
+.dark input[type="email"],
+.dark textarea {
+  background-color: hsl(222.2 84% 4.9%) !important;
+  color: hsl(210 40% 98%) !important;
+  border-color: hsl(217.2 32.6% 17.5%) !important;
+}
+
+.dark input::placeholder,
+.dark textarea::placeholder {
+  color: hsl(215 20.2% 65.1%) !important;
+}
+
+/* Ensure focus states work in dark mode */
+.dark input:focus,
+.dark textarea:focus {
+  border-color: hsl(212.7 26.8% 83.9%) !important;
+  ring-color: hsl(212.7 26.8% 83.9%) !important;
 }
