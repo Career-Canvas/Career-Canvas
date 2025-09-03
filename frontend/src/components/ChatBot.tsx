@@ -2,8 +2,10 @@ import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { MessageCircle, Send, X, RefreshCw } from "lucide-react";
+import { MessageCircle, Send, X, RefreshCw, Settings } from "lucide-react";
 import { universities, courses } from "@/data/universityData";
+import apiKeyManager from "@/services/apiKeyManager";
+import APIKeyManagerComponent from "./APIKeyManager";
 
 interface Message {
   id: string;
@@ -29,14 +31,28 @@ const ChatBot = ({ apsScore, userSubjects, personalityType, setMessages: setPare
   const [conversationId, setConversationId] = useState<string>("");
   const [retryCount, setRetryCount] = useState(0);
   const [isHealthy, setIsHealthy] = useState(true);
+  const [showKeyManager, setShowKeyManager] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   
   // Debug logging
   console.log('ChatBot render - Current data:', { apsScore, userSubjects, personalityType, refreshTrigger });
   
   // Gemini API configuration
-  const GEMINI_API_KEY = "AIzaSyAWHvDx2wyRVwYyuTuqenEvioc3JsVKSjE";
   const GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent";
+  
+  // Get current API key from rotation manager
+  const getCurrentAPIKey = () => {
+    const keyInfo = apiKeyManager.getCurrentKeyInfo();
+    if (!keyInfo) {
+      console.warn("⚠️ No available API keys - all keys are rate limited");
+      return null;
+    }
+    console.log(`🔑 Using API key: ${keyInfo.name}`);
+    return keyInfo.key;
+  };
+  
+  // Add retry delay configuration
+  const RETRY_DELAYS = [1000, 2000, 5000]; // Progressive delays in milliseconds
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -121,6 +137,12 @@ I can now provide you with personalized advice! Ask me anything like:
       setIsHealthy(false);
       return false;
     }
+    
+    // If we've had recent failures, provide a warning but allow continuation
+    if (retryCount >= 1) {
+      console.warn(`Conversation health warning: ${retryCount} recent failures`);
+    }
+    
     return true;
   };
 
@@ -132,14 +154,12 @@ I can now provide you with personalized advice! Ask me anything like:
       requiredSubjects: course.requiredSubjects,
       personalityType: course.personalityType,
       brainInfo: course.brainInfo,
-      heartInfo: course.heartInfo,
-      reviews: course.reviews
+      heartInfo: course.heartInfo
     }));
 
     const universitiesData = universities.map(uni => ({
       name: uni.name,
       description: uni.description,
-      generalReviews: uni.generalReviews,
       campusTips: uni.campusTips
     }));
 
@@ -177,7 +197,7 @@ IMPORTANT: Use the conversation history to provide contextual responses. Don't a
 CRITICAL: When asked about specific courses or universities, provide detailed, actionable information. Don't give vague responses or ask unnecessary clarifying questions if the student has already specified what they want to know.`;
   };
 
-  const sendMessage = async () => {
+  const sendMessage = async (retryAttempt = 0) => {
     if (!inputMessage.trim() || isLoading) return;
     
     // Check conversation health before proceeding
@@ -258,7 +278,12 @@ CRITICAL: When asked about specific courses or universities, provide detailed, a
               const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 12000); // Reduced timeout to 12 seconds for faster recovery
 
-      const response = await fetch(`${GEMINI_API_URL}?key=${GEMINI_API_KEY}`, {
+      const currentAPIKey = getCurrentAPIKey();
+      if (!currentAPIKey) {
+        throw new Error("No available API keys - all keys are rate limited");
+      }
+      
+      const response = await fetch(`${GEMINI_API_URL}?key=${currentAPIKey}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -294,6 +319,9 @@ CRITICAL: When asked about specific courses or universities, provide detailed, a
       console.log('Created bot message:', botMessage);
       setLocalMessages(prev => [...prev, botMessage]);
       setRetryCount(0); // Reset retry count on success
+      
+      // Reset conversation health on success
+      setIsHealthy(true);
     } catch (error) {
       console.error("Gemini API error:", error);
       
@@ -305,6 +333,60 @@ CRITICAL: When asked about specific courses or universities, provide detailed, a
         errorContent = "Network error. Please check your connection and try again.";
       } else if (error.message.includes('JSON')) {
         errorContent = "Invalid response received. Please try again.";
+      } else if (error.message.includes('HTTP 429')) {
+        // Handle rate limiting specifically
+        const currentKey = getCurrentAPIKey();
+        if (currentKey) {
+          // Mark current key as rate limited and try to rotate
+          apiKeyManager.markKeyAsRateLimited(currentKey);
+          
+          // Check if we have other keys available
+          if (apiKeyManager.hasAvailableKeys()) {
+            errorContent = `🔄 **Key Rate Limited** - Switching to backup API key and retrying...`;
+            
+            // Add the error message
+            const errorMessage: Message = {
+              id: (Date.now() + 1).toString(),
+              content: errorContent,
+              isUser: false,
+              timestamp: new Date()
+            };
+            
+            setLocalMessages(prev => [...prev, errorMessage]);
+            
+            // Retry immediately with new key
+            setTimeout(() => {
+              sendMessage(retryAttempt);
+            }, 1000);
+            
+            return; // Don't increment retry count yet
+          }
+        }
+        
+        // If no keys available or all keys are rate limited
+        if (retryAttempt < RETRY_DELAYS.length) {
+          const delay = RETRY_DELAYS[retryAttempt];
+          errorContent = `🔄 **All Keys Rate Limited** - Retrying in ${delay/1000} seconds...`;
+          
+          // Add the error message
+          const errorMessage: Message = {
+            id: (Date.now() + 1).toString(),
+            content: errorContent,
+            isUser: false,
+            timestamp: new Date()
+          };
+          
+          setLocalMessages(prev => [...prev, errorMessage]);
+          
+          // Retry after delay
+          setTimeout(() => {
+            sendMessage(retryAttempt + 1);
+          }, delay);
+          
+          return; // Don't increment retry count yet
+        } else {
+          errorContent = "⚠️ **All API Keys Rate Limited** - Please wait a few minutes before asking another question, or try refreshing the conversation.";
+        }
       } else if (error.message.includes('HTTP')) {
         errorContent = `Server error (${error.message}). Please try again in a moment.`;
       }
@@ -321,6 +403,18 @@ CRITICAL: When asked about specific courses or universities, provide detailed, a
       
       // Increment retry count for potential retry logic
       setRetryCount(prev => prev + 1);
+      
+      // If we've had too many failures, provide a fallback response
+      if (retryCount >= 2) {
+        const fallbackMessage: Message = {
+          id: (Date.now() + 2).toString(),
+          content: `💡 **Fallback Response**\n\nSince I'm having technical difficulties, here's some general advice based on your profile:\n\n🎯 **APS Score ${apsScore}**: You qualify for many courses! Consider:\n• **Engineering** (if you have Mathematics + Physical Science)\n• **Commerce** (Accounting, Business Management)\n• **Humanities** (Psychology, History, Languages)\n\n📚 **Your Subjects**: ${userSubjects.join(', ')}\n• **Mathematics**: Opens doors to Engineering, Science, Commerce\n• **Accounting**: Great for Business, Finance, Economics\n• **IT**: Perfect for Computer Science, Information Systems\n\n🧠 **Personality ${personalityType}**: ISTJ types excel in:\n• **Structured programs** like Engineering, Accounting\n• **Practical fields** like IT, Business\n• **Research-based** courses like Computer Science\n\n🏫 **University Recommendations**:\n• **Wits**: Strong in Engineering and Sciences\n• **UJ**: Excellent for Business and IT\n• **UCT**: Top choice for Humanities and Research\n\nTry refreshing the conversation or ask a specific question when I'm back online!`,
+          isUser: false,
+          timestamp: new Date()
+        };
+        
+        setLocalMessages(prev => [...prev, fallbackMessage]);
+      }
     } finally {
       setIsLoading(false);
     }
@@ -387,6 +481,18 @@ ${apsScore !== null ? `\n🔍 **Debug Info**: I can see your APS score is ${apsS
             </CardTitle>
             <div className="flex items-center space-x-2">
               <div className={`w-2 h-2 rounded-full ${isHealthy ? 'bg-green-500' : 'bg-red-500'}`} title={isHealthy ? 'Conversation healthy' : 'Conversation needs attention'} />
+              <div className="text-xs text-gray-500 dark:text-gray-400">
+                🔑 {apiKeyManager.getAvailableKeysCount()}/{apiKeyManager.getKeysStatus().length}
+              </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowKeyManager(true)}
+                className="h-8 w-8 p-0 hover:bg-gray-100 dark:hover:bg-gray-700"
+                title="Manage API Keys"
+              >
+                <Settings className="w-4 h-4" />
+              </Button>
               <Button
                 variant="ghost"
                 size="sm"
@@ -477,7 +583,7 @@ ${apsScore !== null ? `\n🔍 **Debug Info**: I can see your APS score is ${apsS
                 className="flex-1"
               />
               <Button
-                onClick={sendMessage}
+                onClick={() => sendMessage()}
                 disabled={!inputMessage.trim() || isLoading}
                 size="sm"
               >
@@ -490,6 +596,12 @@ ${apsScore !== null ? `\n🔍 **Debug Info**: I can see your APS score is ${apsS
           </div>
         </CardContent>
       </Card>
+      
+      {/* API Key Manager Modal */}
+      <APIKeyManagerComponent 
+        isOpen={showKeyManager}
+        onClose={() => setShowKeyManager(false)}
+      />
     </div>
   );
 };

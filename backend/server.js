@@ -57,11 +57,15 @@ app.use(
   })
 );
 
-// Rate limiting
+// Rate limiting - More generous for chatbot usage
 const limiter = rateLimit({
-  windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS) || 15 * 60 * 1000,
-  max: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS) || 100,
+  windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS) || 60 * 1000, // 1 minute window
+  max: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS) || 30, // 30 requests per minute
   message: 'Too many requests from this IP, please try again later.',
+  standardHeaders: true,
+  legacyHeaders: false,
+  // Skip rate limiting for health checks
+  skip: (req) => req.path === '/health',
 });
 app.use(limiter);
 
@@ -76,6 +80,21 @@ app.get('/health', (req, res) => {
     timestamp: new Date().toISOString(),
     service: 'Career Canvas Review API',
   });
+});
+
+// Chatbot-specific rate limiting - More generous for AI interactions
+const chatbotLimiter = rateLimit({
+  windowMs: 60 * 1000, // 1 minute
+  max: 10, // 10 requests per minute per IP for chatbot
+  message: 'Chatbot rate limit exceeded. Please wait a moment before asking another question.',
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+// Chatbot endpoint with its own rate limiting
+app.post('/api/chatbot', chatbotLimiter, (req, res) => {
+  // This endpoint can be used to proxy chatbot requests if needed
+  res.json({ message: 'Chatbot endpoint ready' });
 });
 
 // ✅ Use router directly (no supabase passed here)
