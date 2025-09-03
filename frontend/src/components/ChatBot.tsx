@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { MessageCircle, Send, X } from "lucide-react";
+import { MessageCircle, Send, X, RefreshCw } from "lucide-react";
 import { universities, courses } from "@/data/universityData";
 
 interface Message {
@@ -26,6 +26,9 @@ const ChatBot = ({ apsScore, userSubjects, personalityType, setMessages: setPare
   const [inputMessage, setInputMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [showDataUpdated, setShowDataUpdated] = useState(false);
+  const [conversationId, setConversationId] = useState<string>("");
+  const [retryCount, setRetryCount] = useState(0);
+  const [isHealthy, setIsHealthy] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   
   // Debug logging
@@ -100,9 +103,26 @@ I can now provide you with personalized advice! Ask me anything like:
     };
     
     setLocalMessages([updatedWelcomeMessage]);
+    // Generate new conversation ID for fresh context
+    setConversationId(Date.now().toString());
   };
 
+  const resetConversation = () => {
+    setLocalMessages([]);
+    setRetryCount(0);
+    setConversationId(Date.now().toString());
+    setIsHealthy(true);
+    refreshChatbotWithNewData();
+  };
 
+  const checkConversationHealth = () => {
+    // If we have too many consecutive errors, mark as unhealthy
+    if (retryCount >= 3) {
+      setIsHealthy(false);
+      return false;
+    }
+    return true;
+  };
 
   const createSystemPrompt = () => {
     const coursesData = courses.map(course => ({
@@ -123,67 +143,54 @@ I can now provide you with personalized advice! Ask me anything like:
       campusTips: uni.campusTips
     }));
 
-    return `You are a friendly university guidance counselor helping South African students choose the right university and course. You have access to comprehensive data about Wits, UJ, and UCT universities.
+    return `You are a friendly, supportive, and knowledgeable university admissions and career advisor.
 
 STUDENT'S PERSONAL INFORMATION:
 - APS Score: ${apsScore !== null ? apsScore : 'Not calculated yet'}
 - Subjects: ${userSubjects.length > 0 ? userSubjects.join(', ') : 'Not selected yet'}
 - Personality Type: ${personalityType || 'Not determined yet'}
 
-DEBUG INFO - Current Data:
-- apsScore value: ${apsScore}
-- userSubjects array: ${JSON.stringify(userSubjects)}
-- personalityType value: ${personalityType}
+CORE CAPABILITIES:
+- Provide personalized advice based on student's marks and profile
+- Explain APS requirements, subject prerequisites, and course content for Wits, UJ, and UCT
+- Compare universities based on student preferences (e.g., "theoretical vs. practical")
+- Match personality traits to suitable degrees
 
-IMPORTANT: You have access to detailed course information including:
-- APS scores required for each course
-- Required subjects for each course
-- Personality types that match each course
-- Course duration and intake periods
-- Student reviews and experiences
+CONVERSATIONAL GUIDELINES:
+- **Keep it concise:** Maximum 2-3 paragraphs, short and to the point
+- **Avoid conversational dead ends:** Always end with a clear, open-ended question
+- **Manage expectations:** If requests are too broad, ask clarifying questions
+- **Handle errors gracefully:** Provide simple, helpful messages instead of long explanations
 
-Available courses and requirements:
-${JSON.stringify(coursesData, null, 2)}
+FORMATTING REQUIREMENTS:
+- **Always use Markdown:** Use ## headings, bullet points (*), and two blank lines between paragraphs
+- **Bold key terms:** Use **bold** for important course names, universities, or concepts
+- **Do NOT include:** Lengthy explanations of how you work, disclaimers about data, or information about your model/APIs
 
-Universities information and reviews:
-${JSON.stringify(universitiesData, null, 2)}
+Available courses: ${coursesData.length} courses with APS requirements, subjects, and personality matches.
+Universities: ${universitiesData.length} universities with reviews and campus tips.
 
-Your role:
-- Be conversational, friendly, and supportive like a helpful friend
-- Use the student's personal data (APS, subjects, personality) to give personalized advice when available
-- Ask questions to understand their interests, academic strengths, and preferences
-- Use the student reviews and experiences to give authentic insights
-- Help them understand APS requirements and subject prerequisites
-- Share campus tips and student experiences
-- Guide them through personality-based course matching when personality data is available
-- Be encouraging and positive
+Remember: Be helpful, conversational, and always guide students to their next step with a question.
 
-SPECIFIC CAPABILITIES:
-1. **Personalized APS Analysis**: Compare their actual APS score with course requirements
-2. **Subject Matching**: Check if their subjects meet course prerequisites
-3. **Personality Matching**: Match their personality type with suitable courses (when available)
-4. **University Comparisons**: Compare the same course across different universities
-5. **Career Guidance**: Use brainInfo and heartInfo to explain what each course offers
+IMPORTANT: Use the conversation history to provide contextual responses. Don't ask for information the student has already provided in previous messages. Build on what they've already told you.
 
-PERSONALITY TEST HANDLING:
-- If they have taken the personality test: Use it to recommend courses that match their learning style
-- If they haven't taken it: Gently suggest it as a helpful tool, but don't make it mandatory
-- Always provide valuable guidance regardless of whether they've completed the personality test
-- Focus on their interests and academic strengths when personality data isn't available
-
-EXAMPLE QUERIES YOU CAN HANDLE:
-- "What courses can I apply for with my current APS score?"
-- "Do my subjects qualify me for Engineering?"
-- "What courses match my personality type?" (if personality data available)
-- "What courses interest me?" (if no personality data)
-- "Compare Computer Science at Wits vs UJ vs UCT"
-- "How can I improve my chances of getting into my dream course?"
-
-Keep responses concise but helpful. Always reference their personal data when relevant. If they haven't calculated their APS or taken the personality test, gently encourage them to do so for better guidance, but don't make it a barrier to helping them.`;
+CRITICAL: When asked about specific courses or universities, provide detailed, actionable information. Don't give vague responses or ask unnecessary clarifying questions if the student has already specified what they want to know.`;
   };
 
   const sendMessage = async () => {
-    if (!inputMessage.trim()) return;
+    if (!inputMessage.trim() || isLoading) return;
+    
+    // Check conversation health before proceeding
+    if (!checkConversationHealth()) {
+      const healthMessage: Message = {
+        id: Date.now().toString(),
+        content: "⚠️ **Conversation Health Check Failed**\n\nI've detected multiple consecutive errors. Please use the refresh button (🔄) to reset the conversation and try again.",
+        isUser: false,
+        timestamp: new Date()
+      };
+      setLocalMessages(prev => [...prev, healthMessage]);
+      return;
+    }
 
     const userMessage: Message = {
       id: Date.now().toString(),
@@ -192,7 +199,9 @@ Keep responses concise but helpful. Always reference their personal data when re
       timestamp: new Date()
     };
 
+    // Add user message immediately
     setLocalMessages(prev => [...prev, userMessage]);
+    const currentInput = inputMessage;
     setInputMessage("");
     setIsLoading(true);
 
@@ -204,57 +213,114 @@ Keep responses concise but helpful. Always reference their personal data when re
       personalityType: personalityType || 'Not determined yet'
     });
 
-    try {
-      // Prepare conversation history for Gemini
-      const conversationHistory = messages.map(msg => ({
-        role: msg.isUser ? "user" : "model",
-        parts: [{ text: msg.content }]
-      }));
+          try {
+        // Prepare conversation history for Gemini
+        // Only include the last 6 messages to prevent API overload and maintain context
+        const recentMessages = messages.slice(-6);
+        
+        // Build the conversation history properly
+        const conversationHistory = [];
+        
+        // Add system prompt as the first message
+        conversationHistory.push({
+          role: "user",
+          parts: [{ text: createSystemPrompt() }]
+        });
+        
+        // Add conversation history in proper format
+        recentMessages.forEach(msg => {
+          conversationHistory.push({
+            role: msg.isUser ? "user" : "model",
+            parts: [{ text: msg.content }]
+          });
+        });
+        
+        // Add the current user message
+        conversationHistory.push({
+          role: "user",
+          parts: [{ text: currentInput }]
+        });
+
+        const requestBody = {
+          contents: conversationHistory,
+          generationConfig: {
+            temperature: 0.7,
+            maxOutputTokens: 800, // Reduced to prevent issues
+            topP: 0.8,
+            topK: 40
+          }
+        };
+
+      console.log('Sending request to Gemini:', requestBody);
+      console.log('Conversation history length:', conversationHistory.length);
+      console.log('First few conversation messages:', conversationHistory.slice(0, 3));
+
+              const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 12000); // Reduced timeout to 12 seconds for faster recovery
 
       const response = await fetch(`${GEMINI_API_URL}?key=${GEMINI_API_KEY}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          contents: [
-            {
-              role: "user",
-              parts: [{ text: createSystemPrompt() + "\n\nUser: " + inputMessage }]
-            },
-            ...conversationHistory
-          ],
-          generationConfig: {
-            temperature: 0.7,
-            maxOutputTokens: 500,
-            topP: 0.8,
-            topK: 40
-          }
-        }),
+        body: JSON.stringify(requestBody),
+        signal: controller.signal,
       });
 
+      clearTimeout(timeoutId);
+
+      console.log('Gemini response status:', response.status);
+      console.log('Gemini response headers:', response.headers);
+
       if (!response.ok) {
-        throw new Error("Failed to get response from Gemini");
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
 
       const data = await response.json();
+      console.log('Gemini response data:', data);
+      
+      if (!data.candidates || !data.candidates[0] || !data.candidates[0].content) {
+        throw new Error("Invalid response format from Gemini API");
+      }
+      
+      // Add the bot response message
       const botMessage: Message = {
         id: (Date.now() + 1).toString(),
         content: data.candidates[0].content.parts[0].text,
         isUser: false,
         timestamp: new Date()
       };
-
+      
+      console.log('Created bot message:', botMessage);
       setLocalMessages(prev => [...prev, botMessage]);
+      setRetryCount(0); // Reset retry count on success
     } catch (error) {
       console.error("Gemini API error:", error);
+      
+      let errorContent = "Sorry, I'm having trouble connecting right now. Please try again in a moment.";
+      
+              if (error.name === 'AbortError') {
+          errorContent = "Request timed out after 12 seconds. Please try again with a shorter question.";
+        } else if (error.message.includes('Failed to fetch')) {
+        errorContent = "Network error. Please check your connection and try again.";
+      } else if (error.message.includes('JSON')) {
+        errorContent = "Invalid response received. Please try again.";
+      } else if (error.message.includes('HTTP')) {
+        errorContent = `Server error (${error.message}). Please try again in a moment.`;
+      }
+      
+      // Add an error message
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
-        content: "Sorry, I'm having trouble connecting right now. Please try again in a moment.",
+        content: errorContent,
         isUser: false,
         timestamp: new Date()
       };
+      
       setLocalMessages(prev => [...prev, errorMessage]);
+      
+      // Increment retry count for potential retry logic
+      setRetryCount(prev => prev + 1);
     } finally {
       setIsLoading(false);
     }
@@ -282,6 +348,8 @@ I can help you with:
 ${apsScore !== null ? `What would you like to know? You can ask me anything like:\n• "What courses can I apply for with my ${apsScore} APS score?"\n• "Do my subjects qualify me for Engineering?"\n• "What courses match my personality type?"` : 'Start by calculating your APS score for the best guidance! The personality test is optional but can help find courses that match your learning style.'}
 
 ${apsScore !== null && userSubjects.length > 0 ? `\n💡 **Quick Tip**: I can now give you personalized advice based on your ${apsScore} APS score and ${userSubjects.join(', ')} subjects!` : ''}
+
+💬 **Pro Tip**: For the best responses, ask complete questions like "I prefer a theoretical approach, what courses would that lead to?" instead of single words like "theoretical".
 
 ${apsScore !== null ? `\n🔍 **Debug Info**: I can see your APS score is ${apsScore} and subjects are ${userSubjects.join(', ')}` : ''}`,
         isUser: false,
@@ -317,14 +385,26 @@ ${apsScore !== null ? `\n🔍 **Debug Info**: I can see your APS score is ${apsS
             <CardTitle className="text-lg font-semibold text-primary">
               Campus Guide 🎓
             </CardTitle>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setIsOpen(false)}
-              className="h-8 w-8 p-0"
-            >
-              <X className="w-4 h-4" />
-            </Button>
+            <div className="flex items-center space-x-2">
+              <div className={`w-2 h-2 rounded-full ${isHealthy ? 'bg-green-500' : 'bg-red-500'}`} title={isHealthy ? 'Conversation healthy' : 'Conversation needs attention'} />
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={resetConversation}
+                className="h-8 w-8 p-0 hover:bg-gray-100"
+                title="Reset conversation"
+              >
+                <RefreshCw className="w-4 h-4" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setIsOpen(false)}
+                className="h-8 w-8 p-0"
+              >
+                <X className="w-4 h-4" />
+              </Button>
+            </div>
           </div>
         </CardHeader>
 
@@ -379,6 +459,7 @@ ${apsScore !== null ? `\n🔍 **Debug Info**: I can see your APS score is ${apsS
                     </div>
                   </div>
                   <p className="text-xs text-blue-500 mt-2 italic">Analyzing your data and finding the perfect courses...</p>
+                  <p className="text-xs text-blue-400 mt-1">This may take up to 12 seconds...</p>
                 </div>
               </div>
             )}
@@ -390,7 +471,7 @@ ${apsScore !== null ? `\n🔍 **Debug Info**: I can see your APS score is ${apsS
               <Input
                 value={inputMessage}
                 onChange={(e) => setInputMessage(e.target.value)}
-                placeholder="Ask me about universities..."
+                placeholder="Ask me about universities... (e.g., 'What courses match my personality?')"
                 onKeyPress={(e) => e.key === "Enter" && sendMessage()}
                 disabled={isLoading}
                 className="flex-1"
@@ -402,6 +483,9 @@ ${apsScore !== null ? `\n🔍 **Debug Info**: I can see your APS score is ${apsS
               >
                 <Send className="w-4 h-4" />
               </Button>
+            </div>
+            <div className="mt-2 text-xs text-gray-500 text-center">
+              💡 Tip: Ask complete questions for better responses • {retryCount > 0 && `Retries: ${retryCount}`}
             </div>
           </div>
         </CardContent>
