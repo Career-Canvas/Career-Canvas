@@ -6,6 +6,10 @@ on:
       - main
   workflow_dispatch:
 
+permissions:
+  id-token: write
+  contents: read
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -13,20 +17,21 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Node.js version
+      - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '20.x'
 
-      - name: Install dependencies and build
+      - name: Install dependencies and Build
         run: |
           cd backend
           npm install
           npm run build --if-present
-          cd ..
 
       - name: Zip artifact for deployment
-        run: zip -r release.zip backend
+        run: |
+          cd backend
+          zip -r ../release.zip . -x "node_modules/*" -x "src/*" -x "test/*"
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
@@ -47,15 +52,20 @@ jobs:
         with:
           name: node-app
 
-      - name: 'Login to Azure'
-        uses: azure/login@v1
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - name: Unzip artifact
+        run: unzip release.zip
 
-      - name: 'Deploy to Azure Web App'
+      - name: Login to Azure
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_ILOSTIT }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_ILOSTIT }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_ILOSTIT }}
+
+      - name: Deploy to Azure Web App
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
         with:
           app-name: 'ilostit'
           slot-name: 'Production'
-          package: release.zip
+          package: '.' # Deploy unzipped backend directly
