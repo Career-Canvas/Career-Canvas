@@ -61,6 +61,7 @@ jobs:
           client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_ILOSTIT }}
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_ILOSTIT }}
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_ILOSTIT }}
+          client-secret: ${{ secrets.AZUREAPPSERVICE_CLIENTSECRET_ILOSTIT }}
 
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
@@ -68,4 +69,4 @@ jobs:
         with:
           app-name: 'ilostit'
           slot-name: 'Production'
-          package: '.' # Deploy unzipped backend directly
+          package: '.'
