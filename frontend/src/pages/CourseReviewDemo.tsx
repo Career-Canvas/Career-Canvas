@@ -336,7 +336,9 @@ export default function CourseReviewDemo() {
                                 <span className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded text-xs">{course.duration}</span>
                                 <span className="px-2 py-1 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded text-xs">{course.intake}</span>
                                 <span className="px-2 py-1 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded text-xs">APS: {course.requiredAPS}</span>
-                                <span className="px-2 py-1 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded text-xs">{course.personalityType}</span>
+                                <span className="px-2 py-1 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded text-xs">
+                                  {Array.isArray(course.personalityType) ? course.personalityType.join(', ') : course.personalityType}
+                                </span>
                               </div>
                               <div className="text-sm text-gray-600 dark:text-gray-400">
                                 <strong>Required Subjects:</strong> {course.requiredSubjects.join(', ')}
@@ -410,7 +412,9 @@ export default function CourseReviewDemo() {
                       <div className="border-t pt-4">
                         <div className="space-y-2">
                           <h4 className="font-medium">Personality Type</h4>
-                          <span className="px-2 py-1 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded text-xs">{selectedCourse.personalityType}</span>
+                          <span className="px-2 py-1 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded text-xs">
+                            {Array.isArray(selectedCourse.personalityType) ? selectedCourse.personalityType.join(', ') : selectedCourse.personalityType}
+                          </span>
                           <p className="text-sm text-gray-600 dark:text-gray-400">
                             {selectedCourse.personalityGroup} Group
                           </p>

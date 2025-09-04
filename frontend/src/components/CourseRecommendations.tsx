@@ -6,12 +6,16 @@ import CourseCard from "./CourseCard";
 import { courses, type Course } from "@/data/universityData";
 
 interface CourseRecommendationsProps {
-  apsScore: number | null;
+  apsResults: {
+    wits: number | null;
+    uj: number | null;
+    up: number | null;
+  };
   userSubjects: string[];
   personalityType: string | null;
 }
 
-const CourseRecommendations = ({ apsScore, userSubjects, personalityType }: CourseRecommendationsProps) => {
+const CourseRecommendations = ({ apsResults, userSubjects, personalityType }: CourseRecommendationsProps) => {
   const [matchedCourses, setMatchedCourses] = useState<Course[]>([]);
   const [showRecommendations, setShowRecommendations] = useState(false);
 
@@ -23,11 +27,19 @@ const CourseRecommendations = ({ apsScore, userSubjects, personalityType }: Cour
   }), []);
 
   useEffect(() => {
-    if (apsScore !== null && personalityType && userSubjects.length > 0) {
+    if ((apsResults.wits !== null || apsResults.uj !== null || apsResults.up !== null) && personalityType && userSubjects.length > 0) {
       const userPersonalityGroup = personalityGroupMapping[personalityType as keyof typeof personalityGroupMapping];
 
       const matches = courses.filter(course => {
-        const apsMatch = apsScore >= course.requiredAPS;
+        // Use the appropriate APS score for each university
+        let apsMatch = false;
+        if (course.university === "Wits" && apsResults.wits !== null) {
+          apsMatch = apsResults.wits >= course.requiredAPS;
+        } else if (course.university === "UJ" && apsResults.uj !== null) {
+          apsMatch = apsResults.uj >= course.requiredAPS;
+        } else if (course.university === "UP" && apsResults.up !== null) {
+          apsMatch = apsResults.up >= course.requiredAPS;
+        }
         
         const hasRequiredSubjects = course.requiredSubjects.every(reqSubject =>
           userSubjects.some(userSubject => 
@@ -36,7 +48,8 @@ const CourseRecommendations = ({ apsScore, userSubjects, personalityType }: Cour
           )
         );
         
-        const personalityMatch = course.personalityGroup === userPersonalityGroup;
+        // Check if user's personality type is in the course's personality type array
+        const personalityMatch = course.personalityType.includes(personalityType);
         
         return apsMatch && hasRequiredSubjects && personalityMatch;
       });
@@ -44,9 +57,9 @@ const CourseRecommendations = ({ apsScore, userSubjects, personalityType }: Cour
       setMatchedCourses(matches);
       setShowRecommendations(true);
     }
-  }, [apsScore, userSubjects, personalityType, personalityGroupMapping]);
+  }, [apsResults, userSubjects, personalityType, personalityGroupMapping]);
 
-  if (!showRecommendations || (apsScore === null || !personalityType)) {
+  if (!showRecommendations || (apsResults.wits === null && apsResults.uj === null && apsResults.up === null) || !personalityType) {
     return (
       <div className="max-w-4xl mx-auto px-4 py-12">
         <Card className="text-center p-12 shadow-card">
@@ -64,6 +77,16 @@ const CourseRecommendations = ({ apsScore, userSubjects, personalityType }: Cour
 
   const userPersonalityGroup = personalityGroupMapping[personalityType as keyof typeof personalityGroupMapping];
 
+  // Helper function to get the appropriate APS score for display
+  const getDisplayAPSScore = () => {
+    if (apsResults.wits !== null) return apsResults.wits;
+    if (apsResults.uj !== null) return apsResults.uj;
+    if (apsResults.up !== null) return apsResults.up;
+    return null;
+  };
+
+  const displayAPSScore = getDisplayAPSScore();
+
   return (
     <div className="max-w-7xl mx-auto px-4 py-12">
       <div className="text-center mb-12">
@@ -71,7 +94,7 @@ const CourseRecommendations = ({ apsScore, userSubjects, personalityType }: Cour
           Your Course Recommendations
         </h2>
         <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-          Based on your APS score of <strong>{apsScore}</strong>, your <strong>{personalityType} ({userPersonalityGroup})</strong> personality type, 
+          Based on your APS scores, your <strong>{personalityType} ({userPersonalityGroup})</strong> personality type, 
           and your subject choices, here are the perfect matches for you.
         </p>
       </div>
@@ -82,8 +105,18 @@ const CourseRecommendations = ({ apsScore, userSubjects, personalityType }: Cour
           <div className="bg-success-green-light p-3 rounded-full w-fit mx-auto mb-4">
             <Target className="w-8 h-8 text-success-green" />
           </div>
-          <h3 className="font-semibold text-gray-900 dark:text-white mb-2">APS Score</h3>
-          <div className="text-2xl font-bold text-success-green">{apsScore}</div>
+          <h3 className="font-semibold text-gray-900 dark:text-white mb-2">APS Scores</h3>
+          <div className="space-y-2">
+            {apsResults.wits !== null && (
+              <div className="text-lg font-bold text-success-green">Wits: {apsResults.wits}</div>
+            )}
+            {apsResults.uj !== null && (
+              <div className="text-lg font-bold text-success-green">UJ: {apsResults.uj}</div>
+            )}
+            {apsResults.up !== null && (
+              <div className="text-lg font-bold text-success-green">UP: {apsResults.up}</div>
+            )}
+          </div>
           <p className="text-sm text-gray-600 dark:text-gray-300">Meets {matchedCourses.length} course requirements</p>
         </Card>
 
@@ -130,7 +163,7 @@ const CourseRecommendations = ({ apsScore, userSubjects, personalityType }: Cour
             <h3 className="text-xl font-semibold text-gray-600 dark:text-gray-300">No Perfect Matches Found</h3>
             <div className="space-y-2 text-gray-500 dark:text-gray-400 max-w-2xl mx-auto">
               <p>
-                Based on your current APS score ({apsScore}), subjects, and {personalityType} personality type, 
+                Based on your current APS scores, subjects, and {personalityType} personality type, 
                 we couldn't find courses that match all your criteria.
               </p>
               <p className="text-sm">

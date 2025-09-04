@@ -1,10 +1,15 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { MessageCircle, Send, X, RefreshCw, Settings } from "lucide-react";
+import { MessageSquare, X, Settings, RefreshCw, Send } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Badge } from "@/components/ui/badge";
+import { apiKeyManager } from "../services/apiKeyManager";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { universities, courses } from "@/data/universityData";
-import apiKeyManager from "@/services/apiKeyManager";
+import { MessageCircle } from "lucide-react";
 import APIKeyManagerComponent from "./APIKeyManager";
 
 interface Message {
@@ -15,14 +20,18 @@ interface Message {
 }
 
 interface ChatBotProps {
-  apsScore: number | null;
+  apsResults: {
+    wits: number | null;
+    uj: number | null;
+    up: number | null;
+  };
   userSubjects: string[];
   personalityType: string | null;
   setMessages: React.Dispatch<React.SetStateAction<any[]>>;
   refreshTrigger?: number;
 }
 
-const ChatBot = ({ apsScore, userSubjects, personalityType, setMessages: setParentMessages, refreshTrigger }: ChatBotProps) => {
+const ChatBot = ({ apsResults, userSubjects, personalityType, setMessages: setParentMessages, refreshTrigger }: ChatBotProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setLocalMessages] = useState<Message[]>([]);
   const [inputMessage, setInputMessage] = useState("");
@@ -35,7 +44,7 @@ const ChatBot = ({ apsScore, userSubjects, personalityType, setMessages: setPare
   const messagesEndRef = useRef<HTMLDivElement>(null);
   
   // Debug logging
-  console.log('ChatBot render - Current data:', { apsScore, userSubjects, personalityType, refreshTrigger });
+  console.log('ChatBot render - Current data:', { apsResults, userSubjects, personalityType, refreshTrigger });
   
   // Gemini API configuration
   const GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent";
@@ -67,7 +76,7 @@ const ChatBot = ({ apsScore, userSubjects, personalityType, setMessages: setPare
 
   // Show data updated notification when component refreshes
   useEffect(() => {
-    if (apsScore !== null || personalityType !== null) {
+    if (apsResults.wits !== null || apsResults.uj !== null || apsResults.up !== null || personalityType !== null) {
       setShowDataUpdated(true);
       setTimeout(() => setShowDataUpdated(false), 4000);
       
@@ -76,7 +85,7 @@ const ChatBot = ({ apsScore, userSubjects, personalityType, setMessages: setPare
         refreshChatbotWithNewData();
       }
     }
-  }, [apsScore, personalityType]);
+  }, [apsResults, personalityType]);
 
   // Handle refresh trigger from parent component
   useEffect(() => {
@@ -95,25 +104,29 @@ const ChatBot = ({ apsScore, userSubjects, personalityType, setMessages: setPare
 
   const refreshChatbotWithNewData = () => {
     // Use the latest props data
-    const currentApsScore = apsScore;
+    const currentApsResults = apsResults;
     const currentUserSubjects = userSubjects;
     const currentPersonalityType = personalityType;
     
-    console.log('Refreshing chatbot with data:', { currentApsScore, currentUserSubjects, currentPersonalityType });
+    console.log('Refreshing chatbot with data:', { currentApsResults, currentUserSubjects, currentPersonalityType });
     
     const updatedWelcomeMessage: Message = {
       id: "welcome-updated",
       content: `🔄 **Your data has been updated!** 
 
-🎯 **Current APS Score: ${currentApsScore !== null ? currentApsScore : 'Not calculated yet'}**
+🎯 **Current APS Scores:**
+${currentApsResults.wits !== null ? `• **Wits**: ${currentApsResults.wits}` : '• **Wits**: Not calculated yet'}
+${currentApsResults.uj !== null ? `• **UJ**: ${currentApsResults.uj}` : '• **UJ**: Not calculated yet'}
+${currentApsResults.up !== null ? `• **UP**: ${currentApsResults.up}` : '• **UP**: Not calculated yet'}
+
 📚 **Current Subjects: ${currentUserSubjects.length > 0 ? currentUserSubjects.join(', ') : 'Not selected yet'}**
 🧠 **Current Personality: ${currentPersonalityType || 'Not determined yet'}**
 
 I can now provide you with personalized advice! Ask me anything like:
-• "What courses can I apply for with my ${currentApsScore !== null ? currentApsScore : 'APS score'}?"
-• "Do my subjects qualify me for Engineering?"
-• "What courses match my personality type?"
-• "Compare universities for my chosen course"`,
+• "What courses can I apply for at Wits with my ${currentApsResults.wits !== null ? currentApsResults.wits : 'APS score'}?"
+• "Do my subjects qualify me for Engineering at UJ?"
+• "What courses match my personality type at UP?"
+• "Compare my options across all three universities"`,
       isUser: false,
       timestamp: new Date()
     };
@@ -166,25 +179,32 @@ I can now provide you with personalized advice! Ask me anything like:
     return `You are a friendly, supportive, and knowledgeable university admissions and career advisor.
 
 STUDENT'S PERSONAL INFORMATION:
-- APS Score: ${apsScore !== null ? apsScore : 'Not calculated yet'}
+- APS Scores:
+  * Wits: ${apsResults.wits !== null ? apsResults.wits : 'Not calculated yet'}
+  * UJ: ${apsResults.uj !== null ? apsResults.uj : 'Not calculated yet'}
+  * UP: ${apsResults.up !== null ? apsResults.up : 'Not calculated yet'}
 - Subjects: ${userSubjects.length > 0 ? userSubjects.join(', ') : 'Not selected yet'}
 - Personality Type: ${personalityType || 'Not determined yet'}
 
 CORE CAPABILITIES:
-- Provide personalized advice based on student's marks and profile
-- Explain APS requirements, subject prerequisites, and course content for Wits, UJ, and UCT
+- Provide personalized advice based on student's marks and profile for each university
+- Explain APS requirements, subject prerequisites, and course content for Wits, UJ, and UP
 - Compare universities based on student preferences (e.g., "theoretical vs. practical")
-- Match personality traits to suitable degrees
+- Match personality traits to suitable degrees at each university
+- Give specific advice about which university might be best based on their APS scores
 
 CONVERSATIONAL GUIDELINES:
 - **Keep it concise:** Maximum 2-3 paragraphs, short and to the point
 - **Avoid conversational dead ends:** Always end with a clear, open-ended question
 - **Manage expectations:** If requests are too broad, ask clarifying questions
 - **Handle errors gracefully:** Provide simple, helpful messages instead of long explanations
+- **Be university-specific:** When giving advice, consider the student's APS score for each university separately
 
 FORMATTING REQUIREMENTS:
-- **Always use Markdown:** Use ## headings, bullet points (*), and two blank lines between paragraphs
+- **Always use proper Markdown formatting:** Use ## headings, bullet points (*), and proper paragraph spacing
+- **Use clear paragraph breaks:** Separate different ideas with blank lines for readability
 - **Bold key terms:** Use **bold** for important course names, universities, or concepts
+- **Structure responses well:** Use headings, lists, and paragraphs to make information easy to scan
 - **Do NOT include:** Lengthy explanations of how you work, disclaimers about data, or information about your model/APIs
 
 Available courses: ${coursesData.length} courses with APS requirements, subjects, and personality matches.
@@ -194,7 +214,9 @@ Remember: Be helpful, conversational, and always guide students to their next st
 
 IMPORTANT: Use the conversation history to provide contextual responses. Don't ask for information the student has already provided in previous messages. Build on what they've already told you.
 
-CRITICAL: When asked about specific courses or universities, provide detailed, actionable information. Don't give vague responses or ask unnecessary clarifying questions if the student has already specified what they want to know.`;
+CRITICAL: When asked about specific courses or universities, provide detailed, actionable information. Don't give vague responses or ask unnecessary clarifying questions if the student has already specified what they want to know.
+
+UNIVERSITY-SPECIFIC GUIDANCE: Always consider the student's APS score for each university when giving advice. A student might qualify for courses at one university but not another due to different APS requirements.`;
   };
 
   const sendMessage = async (retryAttempt = 0) => {
@@ -226,9 +248,9 @@ CRITICAL: When asked about specific courses or universities, provide detailed, a
     setIsLoading(true);
 
     // Debug logging
-    console.log('Sending message to AI with data:', { apsScore, userSubjects, personalityType });
+    console.log('Sending message to AI with data:', { apsResults, userSubjects, personalityType });
     console.log('System prompt data:', { 
-      apsScore: apsScore !== null ? apsScore : 'Not calculated yet',
+      apsResults: apsResults,
       userSubjects: userSubjects.length > 0 ? userSubjects.join(', ') : 'Not selected yet',
       personalityType: personalityType || 'Not determined yet'
     });
@@ -408,7 +430,7 @@ CRITICAL: When asked about specific courses or universities, provide detailed, a
       if (retryCount >= 2) {
         const fallbackMessage: Message = {
           id: (Date.now() + 2).toString(),
-          content: `💡 **Fallback Response**\n\nSince I'm having technical difficulties, here's some general advice based on your profile:\n\n🎯 **APS Score ${apsScore}**: You qualify for many courses! Consider:\n• **Engineering** (if you have Mathematics + Physical Science)\n• **Commerce** (Accounting, Business Management)\n• **Humanities** (Psychology, History, Languages)\n\n📚 **Your Subjects**: ${userSubjects.join(', ')}\n• **Mathematics**: Opens doors to Engineering, Science, Commerce\n• **Accounting**: Great for Business, Finance, Economics\n• **IT**: Perfect for Computer Science, Information Systems\n\n🧠 **Personality ${personalityType}**: ISTJ types excel in:\n• **Structured programs** like Engineering, Accounting\n• **Practical fields** like IT, Business\n• **Research-based** courses like Computer Science\n\n🏫 **University Recommendations**:\n• **Wits**: Strong in Engineering and Sciences\n• **UJ**: Excellent for Business and IT\n• **UCT**: Top choice for Humanities and Research\n\nTry refreshing the conversation or ask a specific question when I'm back online!`,
+          content: `💡 **Fallback Response**\n\nSince I'm having technical difficulties, here's some general advice based on your profile:\n\n🎯 **APS Scores ${apsResults.wits}, ${apsResults.uj}, ${apsResults.up}**: You qualify for many courses across all universities! Consider:\n• **Engineering** (if you have Mathematics + Physical Science)\n• **Commerce** (Accounting, Business Management)\n• **Humanities** (Psychology, History, Languages)\n\n📚 **Your Subjects**: ${userSubjects.join(', ')}\n• **Mathematics**: Opens doors to Engineering, Science, Commerce\n• **Accounting**: Great for Business, Finance, Economics\n• **IT**: Perfect for Computer Science, Information Systems\n\n🧠 **Personality ${personalityType}**: ISTJ types excel in:\n• **Structured programs** like Engineering, Accounting\n• **Practical fields** like IT, Business\n• **Research-based** courses like Computer Science\n\n🏫 **University Recommendations**:\n• **Wits**: Strong in Engineering and Sciences\n• **UJ**: Excellent for Business and IT\n• **UP**: Top choice for Agriculture and Health Sciences\n\nTry refreshing the conversation or ask a specific question when I'm back online!`,
           isUser: false,
           timestamp: new Date()
         };
@@ -428,7 +450,9 @@ CRITICAL: When asked about specific courses or universities, provide detailed, a
         id: "welcome",
         content: `Hey there! 👋 I'm your AI university guide! 
 
-${apsScore !== null ? `🎯 **Your APS Score: ${apsScore}**` : '🎯 **Calculate your APS score first** for personalized advice'}
+${apsResults.wits !== null ? `🎯 **Your Wits APS Score: ${apsResults.wits}**` : '🎯 **Calculate your Wits APS score first** for personalized advice'}
+${apsResults.uj !== null ? `🎯 **Your UJ APS Score: ${apsResults.uj}**` : '🎯 **Calculate your UJ APS score first** for personalized advice'}
+${apsResults.up !== null ? `🎯 **Your UP APS Score: ${apsResults.up}**` : '🎯 **Calculate your UP APS score first** for personalized advice'}
 ${userSubjects.length > 0 ? `📚 **Your Subjects: ${userSubjects.join(', ')}**` : '📚 **Select your subjects** to see course requirements'}
 ${personalityType ? `🧠 **Your Personality: ${personalityType}**` : '🧠 **Personality test available** (optional but helpful!)'}
 
@@ -436,23 +460,23 @@ I can help you with:
 🎯 **Personalized Course Matching** - Based on your actual scores and subjects
 🧠 **Course Recommendations** - Based on your interests and strengths
 📚 **Subject Requirement Checking** - See if you qualify for specific courses
-🏫 **University Comparisons** - Compare Wits, UJ, and UCT
+🏫 **University Comparisons** - Compare Wits, UJ, and UP
 💡 **Course Insights** - Get real student experiences
 
-${apsScore !== null ? `What would you like to know? You can ask me anything like:\n• "What courses can I apply for with my ${apsScore} APS score?"\n• "Do my subjects qualify me for Engineering?"\n• "What courses match my personality type?"` : 'Start by calculating your APS score for the best guidance! The personality test is optional but can help find courses that match your learning style.'}
+${apsResults.wits !== null && apsResults.uj !== null && apsResults.up !== null ? `What would you like to know? You can ask me anything like:\n• "What courses can I apply for at Wits with my ${apsResults.wits} APS score?"\n• "Do my subjects qualify me for Engineering at UJ?"\n• "What courses match my personality type at UP?"` : 'Start by calculating your APS scores for the best guidance! The personality test is optional but can help find courses that match your learning style.'}
 
-${apsScore !== null && userSubjects.length > 0 ? `\n💡 **Quick Tip**: I can now give you personalized advice based on your ${apsScore} APS score and ${userSubjects.join(', ')} subjects!` : ''}
+${apsResults.wits !== null && apsResults.uj !== null && apsResults.up !== null ? `\n💡 **Quick Tip**: I can now give you personalized advice based on your ${apsResults.wits}, ${apsResults.uj}, and ${apsResults.up} APS scores and ${userSubjects.join(', ')} subjects!` : ''}
 
 💬 **Pro Tip**: For the best responses, ask complete questions like "I prefer a theoretical approach, what courses would that lead to?" instead of single words like "theoretical".
 
-${apsScore !== null ? `\n🔍 **Debug Info**: I can see your APS score is ${apsScore} and subjects are ${userSubjects.join(', ')}` : ''}`,
+${apsResults.wits !== null && apsResults.uj !== null && apsResults.up !== null ? `\n🔍 **Debug Info**: I can see your APS scores are ${apsResults.wits}, ${apsResults.uj}, and ${apsResults.up} and subjects are ${userSubjects.join(', ')}` : ''}`,
         isUser: false,
         timestamp: new Date()
       };
       
       setLocalMessages([welcomeMessage]);
     }
-  }, [isOpen, apsScore, userSubjects, personalityType, messages.length]);
+  }, [isOpen, apsResults, userSubjects, personalityType, messages.length]);
 
   const startChat = () => {
     setIsOpen(true);
@@ -523,8 +547,10 @@ ${apsScore !== null ? `\n🔍 **Debug Info**: I can see your APS score is ${apsS
                 <span className="text-sm font-medium">Your data has been updated!</span>
               </div>
               <p className="text-xs text-blue-600 dark:text-blue-400 mt-1">
-                {apsScore !== null && `APS Score: ${apsScore}`}
-                {apsScore !== null && personalityType !== null && ' • '}
+                {apsResults.wits !== null && `Wits APS: ${apsResults.wits}`}
+                {apsResults.uj !== null && ` • UJ APS: ${apsResults.uj}`}
+                {apsResults.up !== null && ` • UP APS: ${apsResults.up}`}
+                {apsResults.wits !== null && personalityType !== null && ' • '}
                 {personalityType !== null && `Personality: ${personalityType}`}
               </p>
             </div>
@@ -543,7 +569,29 @@ ${apsScore !== null ? `\n🔍 **Debug Info**: I can see your APS score is ${apsS
                       : "bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200"
                   }`}
                 >
-                  {message.content}
+                  {message.isUser ? (
+                    message.content
+                  ) : (
+                    <div className="prose prose-sm max-w-none dark:prose-invert">
+                      <ReactMarkdown 
+                        remarkPlugins={[remarkGfm]}
+                        components={{
+                          p: ({children}) => <p className="mb-3 last:mb-0">{children}</p>,
+                          h1: ({children}) => <h1 className="text-lg font-bold mb-2">{children}</h1>,
+                          h2: ({children}) => <h2 className="text-base font-semibold mb-2">{children}</h2>,
+                          h3: ({children}) => <h3 className="text-sm font-semibold mb-1">{children}</h3>,
+                          ul: ({children}) => <ul className="list-disc list-inside mb-3 space-y-1">{children}</ul>,
+                          ol: ({children}) => <ol className="list-decimal list-inside mb-3 space-y-1">{children}</ol>,
+                          li: ({children}) => <li className="text-sm">{children}</li>,
+                          strong: ({children}) => <strong className="font-semibold">{children}</strong>,
+                          em: ({children}) => <em className="italic">{children}</em>,
+                          blockquote: ({children}) => <blockquote className="border-l-4 border-gray-300 dark:border-gray-600 pl-3 italic text-gray-600 dark:text-gray-400">{children}</blockquote>
+                        }}
+                      >
+                        {message.content}
+                      </ReactMarkdown>
+                    </div>
+                  )}
                 </div>
               </div>
             ))}

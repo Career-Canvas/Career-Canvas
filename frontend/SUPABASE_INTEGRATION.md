@@ -26,7 +26,7 @@ When a user submits a course review, the form data is mapped to your database sc
 
 | Form Field | Database Field | Type | Required | Notes |
 |------------|----------------|------|----------|-------|
-| `university` | `university_name` | text | ✅ | University short name (Wits, UJ, UCT) |
+| `university` | `university_name` | text | ✅ | University short name (Wits, UJ, UP) |
 | `course` | `course_name` | text | ✅ | Full course name |
 | `reviewText` | `review_text` | text | ✅ | User's review content |
 | `author` | `author` | text | ❌ | Optional user name |
@@ -160,7 +160,7 @@ const { data, error } = await supabase
 ## Data Validation
 
 ### Required Fields
-- `university_name`: Must be one of: "Wits", "UJ", "UCT"
+- `university_name`: Must be one of: "Wits", "UJ", "UP"
 - `course_name`: Must exist in your courses data
 - `review_text`: Minimum 10 characters, maximum 1000
 

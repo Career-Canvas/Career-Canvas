@@ -17,7 +17,7 @@ interface APSResult {
 }
 
 interface APSCalculatorProps {
-  onAPSCalculated: (score: number, subjects: string[]) => void;
+  onAPSCalculated: (scores: APSResult, subjects: string[]) => void;
 }
 
 const APSCalculator = ({ onAPSCalculated }: APSCalculatorProps) => {
@@ -139,7 +139,7 @@ const APSCalculator = ({ onAPSCalculated }: APSCalculatorProps) => {
     
     // Call the callback with the Wits score and selected subjects
     const selectedSubjectNames = validSubjects.map(s => s.name);
-    onAPSCalculated(witsScore, selectedSubjectNames);
+    onAPSCalculated({ wits: witsScore, uj: ujScore, up: upScore }, selectedSubjectNames);
   };
 
   return (

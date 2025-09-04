@@ -4,18 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { getCourseReviews, CourseReview } from "../services/courseReviewService";
-
-interface Course {
-  courseName: string;
-  requiredAPS: number;
-  requiredSubjects: string[];
-  personalityType: string;
-  brainInfo: string;
-  heartInfo: string;
-  university: string;
-  duration: string;
-  intake: string;
-}
+import { Course } from "../data/universityData";
 
 interface CourseCardProps {
   course: Course;
@@ -96,7 +85,7 @@ const CourseCard = ({ course, isMatched = false }: CourseCardProps) => {
               APS: {course.requiredAPS}+
             </Badge>
             <Badge variant="outline" className="text-purple-600 border-purple-600/30">
-              {course.personalityType}
+              {Array.isArray(course.personalityType) ? course.personalityType.join(', ') : course.personalityType}
             </Badge>
           </div>
 

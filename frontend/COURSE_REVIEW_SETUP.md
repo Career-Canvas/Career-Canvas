@@ -66,7 +66,7 @@ VITE_SUPABASE_ANON_KEY=your_supabase_anon_key_here
 ### ✅ Part 1: Review Submission Form
 - [x] React component with all required form elements
 - [x] Optional name input
-- [x] University dropdown (Wits, UJ, UCT)
+- [x] University dropdown (Wits, UJ, UP)
 - [x] Dynamic course dropdown based on university selection
 - [x] Review text area with character limits
 - [x] Submit button with proper validation

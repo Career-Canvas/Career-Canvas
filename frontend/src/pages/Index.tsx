@@ -7,16 +7,22 @@ import UniversitySections from "@/components/UniversitySections";
 import ChatBot from "@/components/ChatBot";
 import ThemeToggle from "@/components/DarkModeToggle";
 
+interface APSResults {
+  wits: number | null;
+  uj: number | null;
+  up: number | null;
+}
+
 const Index = () => {
-  const [apsScore, setApsScore] = useState<number | null>(null);
+  const [apsResults, setApsResults] = useState<APSResults>({ wits: null, uj: null, up: null });
   const [userSubjects, setUserSubjects] = useState<string[]>([]);
   const [personalityType, setPersonalityType] = useState<string | null>(null);
   const [messages, setMessages] = useState<any[]>([]);
   const [refreshChatbot, setRefreshChatbot] = useState<number>(0);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
 
-  const handleAPSCalculated = (score: number, subjects: string[]) => {
-    setApsScore(score);
+  const handleAPSCalculated = (scores: APSResults, subjects: string[]) => {
+    setApsResults(scores);
     setUserSubjects(subjects);
   };
 
@@ -25,8 +31,8 @@ const Index = () => {
   };
 
   const handleLockInResults = () => {
-    if (apsScore !== null || personalityType !== null) {
-      console.log('Lock-in button clicked with data:', { apsScore, userSubjects, personalityType });
+    if (apsResults.wits !== null || apsResults.uj !== null || apsResults.up !== null || personalityType !== null) {
+      console.log('Lock-in button clicked with data:', { apsResults, userSubjects, personalityType });
       
       // Reset chatbot messages and trigger a refresh with new data
       setMessages([]);
@@ -37,6 +43,12 @@ const Index = () => {
       // Hide success message after 3 seconds
       setTimeout(() => setShowSuccessMessage(false), 3000);
     }
+  };
+
+  // Helper function to get the highest APS score for display purposes
+  const getHighestAPSScore = () => {
+    const scores = [apsResults.wits, apsResults.uj, apsResults.up].filter(score => score !== null);
+    return scores.length > 0 ? Math.max(...scores) : null;
   };
 
   return (
@@ -62,55 +74,55 @@ const Index = () => {
             </p>
           </div>
           
-                     <div className="grid lg:grid-cols-2 gap-8">
-             <APSCalculator onAPSCalculated={handleAPSCalculated} />
-             <PersonalityTest onPersonalityDetermined={handlePersonalityDetermined} />
-           </div>
-           
-           {/* Save/Lock In Button */}
-           <div className="text-center mt-12">
-             <button
-               onClick={handleLockInResults}
-               disabled={apsScore === null && personalityType === null}
-               className={`px-8 py-4 rounded-full text-lg font-semibold transition-all duration-300 ${
-                 apsScore !== null || personalityType !== null
-                   ? 'bg-academic-blue hover:bg-academic-blue/90 text-white shadow-lg hover:shadow-xl transform hover:scale-105'
-                   : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-               }`}
-             >
-               {apsScore !== null || personalityType !== null ? (
-                 <>
-                   🔒 Lock In My Results & Update AI Guide
-                   <span className="block text-sm font-normal mt-1">
-                     {apsScore !== null && `APS: ${apsScore}`}
-                     {apsScore !== null && personalityType !== null && ' • '}
-                     {personalityType !== null && `Personality: ${personalityType}`}
-                   </span>
-                 </>
-               ) : (
-                 'Complete APS Calculator or Personality Test to Continue'
-               )}
-             </button>
-             
-             {/* Success Message */}
-             {showSuccessMessage && (
-               <div className="mt-4 animate-in slide-in-from-top-2 duration-300">
-                 <div className="inline-flex items-center px-4 py-2 bg-green-100 dark:bg-green-900 border border-green-400 dark:border-green-600 text-green-700 dark:text-green-300 rounded-full">
-                   <span className="mr-2">✅</span>
-                   <span className="text-sm font-medium">
-                     Results locked in! Your AI guide has been updated with your latest information.
-                   </span>
-                 </div>
-               </div>
-             )}
-           </div>
+          <div className="grid lg:grid-cols-2 gap-8">
+            <APSCalculator onAPSCalculated={handleAPSCalculated} />
+            <PersonalityTest onPersonalityDetermined={handlePersonalityDetermined} />
+          </div>
+          
+          {/* Save/Lock In Button */}
+          <div className="text-center mt-12">
+            <button
+              onClick={handleLockInResults}
+              disabled={apsResults.wits === null && apsResults.uj === null && apsResults.up === null && personalityType === null}
+              className={`px-8 py-4 rounded-full text-lg font-semibold transition-all duration-300 ${
+                apsResults.wits !== null || apsResults.uj !== null || apsResults.up !== null || personalityType !== null
+                  ? 'bg-academic-blue hover:bg-academic-blue/90 text-white shadow-lg hover:shadow-xl transform hover:scale-105'
+                  : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+              }`}
+            >
+              {apsResults.wits !== null || apsResults.uj !== null || apsResults.up !== null || personalityType !== null ? (
+                <>
+                  🔒 Lock In My Results & Update AI Guide
+                  <span className="block text-sm font-normal mt-1">
+                    {getHighestAPSScore() !== null && `APS: ${getHighestAPSScore()}`}
+                    {getHighestAPSScore() !== null && personalityType !== null && ' • '}
+                    {personalityType !== null && `Personality: ${personalityType}`}
+                  </span>
+                </>
+              ) : (
+                'Complete APS Calculator or Personality Test to Continue'
+              )}
+            </button>
+            
+            {/* Success Message */}
+            {showSuccessMessage && (
+              <div className="mt-4 animate-in slide-in-from-top-2 duration-300">
+                <div className="inline-flex items-center px-4 py-2 bg-green-100 dark:bg-green-900 border border-green-400 dark:border-green-600 text-green-700 dark:text-green-300 rounded-full">
+                  <span className="mr-2">✅</span>
+                  <span className="text-sm font-medium">
+                    Results locked in! Your AI guide has been updated with your latest information.
+                  </span>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </section>
 
       {/* Course Recommendations */}
       <section className="py-16 bg-white dark:bg-gray-800">
         <CourseRecommendations 
-          apsScore={apsScore}
+          apsResults={apsResults}
           userSubjects={userSubjects}
           personalityType={personalityType}
         />
@@ -163,7 +175,7 @@ const Index = () => {
 
       {/* AI Chatbot */}
       <ChatBot 
-        apsScore={apsScore}
+        apsResults={apsResults}
         userSubjects={userSubjects}
         personalityType={personalityType}
         setMessages={setMessages}
