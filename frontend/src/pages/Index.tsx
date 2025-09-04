@@ -20,6 +20,7 @@ const Index = () => {
   const [messages, setMessages] = useState<any[]>([]);
   const [refreshChatbot, setRefreshChatbot] = useState<number>(0);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+  const [resultsLockedIn, setResultsLockedIn] = useState(false);
 
   const handleAPSCalculated = (scores: APSResults, subjects: string[]) => {
     setApsResults(scores);
@@ -34,6 +35,9 @@ const Index = () => {
     if (apsResults.wits !== null || apsResults.uj !== null || apsResults.up !== null || personalityType !== null) {
       console.log('Lock-in button clicked with data:', { apsResults, userSubjects, personalityType });
       
+      // Set results as locked in
+      setResultsLockedIn(true);
+      
       // Reset chatbot messages and trigger a refresh with new data
       setMessages([]);
       // Force chatbot to refresh by updating a trigger state
@@ -45,11 +49,8 @@ const Index = () => {
     }
   };
 
-  // Helper function to get the highest APS score for display purposes
-  const getHighestAPSScore = () => {
-    const scores = [apsResults.wits, apsResults.uj, apsResults.up].filter(score => score !== null);
-    return scores.length > 0 ? Math.max(...scores) : null;
-  };
+  // Check if both APS and personality are completed
+  const isBothCompleted = (apsResults.wits !== null || apsResults.uj !== null || apsResults.up !== null) && personalityType !== null;
 
   return (
     <div className="min-h-screen bg-background">
@@ -83,24 +84,17 @@ const Index = () => {
           <div className="text-center mt-12">
             <button
               onClick={handleLockInResults}
-              disabled={apsResults.wits === null && apsResults.uj === null && apsResults.up === null && personalityType === null}
+              disabled={!isBothCompleted}
               className={`px-8 py-4 rounded-full text-lg font-semibold transition-all duration-300 ${
-                apsResults.wits !== null || apsResults.uj !== null || apsResults.up !== null || personalityType !== null
+                isBothCompleted
                   ? 'bg-academic-blue hover:bg-academic-blue/90 text-white shadow-lg hover:shadow-xl transform hover:scale-105'
                   : 'bg-gray-300 text-gray-500 cursor-not-allowed'
               }`}
             >
-              {apsResults.wits !== null || apsResults.uj !== null || apsResults.up !== null || personalityType !== null ? (
-                <>
-                  🔒 Lock In My Results & Update AI Guide
-                  <span className="block text-sm font-normal mt-1">
-                    {getHighestAPSScore() !== null && `APS: ${getHighestAPSScore()}`}
-                    {getHighestAPSScore() !== null && personalityType !== null && ' • '}
-                    {personalityType !== null && `Personality: ${personalityType}`}
-                  </span>
-                </>
+              {isBothCompleted ? (
+                '🔒 Lock In My APS Scores and Personality Type'
               ) : (
-                'Complete APS Calculator or Personality Test to Continue'
+                'Complete APS Calculator and Personality Test to Find Your Perfect Matches'
               )}
             </button>
             
@@ -119,14 +113,16 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Course Recommendations */}
-      <section className="py-16 bg-white dark:bg-gray-800">
-        <CourseRecommendations 
-          apsResults={apsResults}
-          userSubjects={userSubjects}
-          personalityType={personalityType}
-        />
-      </section>
+      {/* Course Recommendations - Only show after results are locked in */}
+      {resultsLockedIn && (
+        <section className="py-16 bg-white dark:bg-gray-800">
+          <CourseRecommendations 
+            apsResults={apsResults}
+            userSubjects={userSubjects}
+            personalityType={personalityType}
+          />
+        </section>
+      )}
 
       {/* University Sections */}
       <section id="university-sections" className="py-16 bg-gray-50 dark:bg-gray-900">
@@ -178,6 +174,7 @@ const Index = () => {
         apsResults={apsResults}
         userSubjects={userSubjects}
         personalityType={personalityType}
+        messages={messages}
         setMessages={setMessages}
         refreshTrigger={refreshChatbot}
       />

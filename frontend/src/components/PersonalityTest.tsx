@@ -265,16 +265,16 @@ const PersonalityTest = ({ onPersonalityDetermined }: PersonalityTestProps) => {
           <Brain className="w-6 h-6" />
           Personality Assessment
         </CardTitle>
-        <CardDescription>
+        <CardDescription className="text-black dark:text-white">
           Based on the Myers-Briggs Type Indicator, this will help discover your learning style and career preferences.
         </CardDescription>
       </CardHeader>
       <CardContent className="p-6">
         {showResult && personalityType ? (
           <div>
-            <div className="p-6 bg-warm-accent-light border border-warm-accent/20 rounded-lg">
+            <div className="p-6 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700/30 rounded-lg">
               <div className="flex items-center gap-3 mb-4">
-                <CheckCircle2 className="w-6 h-6 text-warm-accent" />
+                <CheckCircle2 className="w-6 h-6 text-blue-600 dark:text-blue-400" />
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Your Personality Type</h3>
               </div>
               
