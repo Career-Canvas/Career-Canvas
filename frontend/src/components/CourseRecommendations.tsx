@@ -17,7 +17,6 @@ interface CourseRecommendationsProps {
 
 const CourseRecommendations = ({ apsResults, userSubjects, personalityType }: CourseRecommendationsProps) => {
   const [matchedCourses, setMatchedCourses] = useState<Course[]>([]);
-  const [showRecommendations, setShowRecommendations] = useState(false);
 
   const personalityGroupMapping = useMemo(() => ({
     "INTJ": "Analytical", "INTP": "Analytical", "ENTJ": "Analytical", "ENTP": "Analytical",
@@ -55,26 +54,10 @@ const CourseRecommendations = ({ apsResults, userSubjects, personalityType }: Co
       });
 
       setMatchedCourses(matches);
-      setShowRecommendations(true);
     }
   }, [apsResults, userSubjects, personalityType, personalityGroupMapping]);
 
-  if (!showRecommendations || (apsResults.wits === null && apsResults.uj === null && apsResults.up === null) || !personalityType) {
-    return (
-      <div className="max-w-4xl mx-auto px-4 py-12">
-        <Card className="text-center p-12 shadow-card">
-          <div className="space-y-4">
-            <BookOpen className="w-16 h-16 text-gray-400 dark:text-gray-500 mx-auto" />
-            <h3 className="text-xl font-semibold text-gray-600 dark:text-gray-300">Ready to Find Your Perfect Course?</h3>
-            <p className="text-gray-500 dark:text-gray-400 max-w-md mx-auto">
-              Complete your APS calculation and personality assessment above to discover courses that match your academic qualifications and learning style.
-            </p>
-          </div>
-        </Card>
-      </div>
-    );
-  }
-
+  // Since this component is now only rendered when results are locked in, we don't need the early return
   const userPersonalityGroup = personalityGroupMapping[personalityType as keyof typeof personalityGroupMapping];
 
   // Helper function to get the appropriate APS score for display
@@ -117,7 +100,6 @@ const CourseRecommendations = ({ apsResults, userSubjects, personalityType }: Co
               <div className="text-lg font-bold text-success-green">UP: {apsResults.up}</div>
             )}
           </div>
-          <p className="text-sm text-gray-600 dark:text-gray-300">Meets {matchedCourses.length} course requirements</p>
         </Card>
 
         <Card className="text-center p-6">

@@ -3,7 +3,15 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Calculator } from "lucide-react";
+import { Calculator, Info } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 interface Subject {
   name: string;
@@ -166,8 +174,8 @@ const APSCalculator = ({ onAPSCalculated }: APSCalculatorProps) => {
             <Calculator className="w-8 h-8" />
             APS Score Calculator
           </CardTitle>
-          <CardDescription className="text-gray-300 dark:text-gray-400">
-            Enter your matric subject results to calculate your Admission Point Score for top universities.
+          <CardDescription className="text-white dark:text-white">
+            Enter your best 7 matric subject results (including Life Orientation) to calculate your Admission Point Score for top universities.
           </CardDescription>
         </CardHeader>
         <CardContent className="p-6">
@@ -350,20 +358,107 @@ const APSCalculator = ({ onAPSCalculated }: APSCalculatorProps) => {
           {showResult && (
             <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
               {apsResults.wits !== null && (
-                <div className="p-6 bg-gray-100 dark:bg-gray-800 rounded-lg shadow-sm text-center">
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Wits APS</h3>
+                <div className="p-6 bg-gray-100 dark:bg-gray-800 rounded-lg shadow-sm text-center relative">
+                  <div className="flex items-center justify-center gap-2 mb-2">
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Wits APS</h3>
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button variant="ghost" size="sm" className="h-6 w-6 p-0 hover:bg-gray-200 dark:hover:bg-gray-700">
+                          <Info className="h-4 w-4 text-gray-600 dark:text-gray-400" />
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="max-w-md">
+                        <DialogHeader>
+                          <DialogTitle>Wits APS Calculation</DialogTitle>
+                          <DialogDescription>
+                            Wits uses a unique scoring system where Life Orientation is counted out of 4 points, and Mathematics and English receive bonus points if you achieve high marks. The calculation includes your best 7 subjects with special weighting for core subjects.
+                          </DialogDescription>
+                        </DialogHeader>
+                        <div className="space-y-3 text-sm">
+                          <div>
+                            <strong>Life Orientation:</strong> Scored out of 4 points (90%+ = 4, 80%+ = 3, 70%+ = 2, 60%+ = 1)
+                          </div>
+                          <div>
+                            <strong>Mathematics & English:</strong> Up to 10 points each (90%+ = 10, 80%+ = 9, etc.)
+                          </div>
+                          <div>
+                            <strong>Other Subjects:</strong> Up to 8 points each (90%+ = 8, 80%+ = 7, etc.)
+                          </div>
+                          <div>
+                            <strong>Total:</strong> Best 7 subjects including Life Orientation
+                          </div>
+                        </div>
+                      </DialogContent>
+                    </Dialog>
+                  </div>
                   <div className="text-4xl font-bold text-gray-800 dark:text-gray-200">{apsResults.wits}</div>
                 </div>
               )}
               {apsResults.uj !== null && (
-                <div className="p-6 bg-red-50 dark:bg-red-900/20 rounded-lg shadow-sm text-center">
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">UJ APS</h3>
+                <div className="p-6 bg-red-50 dark:bg-red-900/20 rounded-lg shadow-sm text-center relative">
+                  <div className="flex items-center justify-center gap-2 mb-2">
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">UJ APS</h3>
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button variant="ghost" size="sm" className="h-6 w-6 p-0 hover:bg-red-100 dark:hover:bg-red-900/30">
+                          <Info className="h-4 w-4 text-red-600" />
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="max-w-md">
+                        <DialogHeader>
+                          <DialogTitle>UJ APS Calculation</DialogTitle>
+                          <DialogDescription>
+                            UJ uses a simple 7-point system where Life Orientation is excluded from the calculation. Your best 6 subjects (excluding Life Orientation) are used to calculate your APS score.
+                          </DialogDescription>
+                        </DialogHeader>
+                        <div className="space-y-3 text-sm">
+                          <div>
+                            <strong>Life Orientation:</strong> Not counted in UJ APS calculation
+                          </div>
+                          <div>
+                            <strong>All Other Subjects:</strong> 7-point scale (80%+ = 7, 70%+ = 6, 60%+ = 5, 50%+ = 4, 40%+ = 3, 30%+ = 2, below 30% = 1)
+                          </div>
+                          <div>
+                            <strong>Total:</strong> Best 6 subjects (excluding Life Orientation)
+                          </div>
+                        </div>
+                      </DialogContent>
+                    </Dialog>
+                  </div>
                   <div className="text-4xl font-bold text-red-600">{apsResults.uj}</div>
                 </div>
               )}
               {apsResults.up !== null && (
-                <div className="p-6 bg-green-50 dark:bg-green-900/20 rounded-lg shadow-sm text-center">
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">UP APS</h3>
+                <div className="p-6 bg-green-50 dark:bg-green-900/20 rounded-lg shadow-sm text-center relative">
+                  <div className="flex items-center justify-center gap-2 mb-2">
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">UP APS</h3>
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button variant="ghost" size="sm" className="h-6 w-6 p-0 hover:bg-green-100 dark:hover:bg-green-900/30">
+                          <Info className="h-4 w-4 text-green-600" />
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="max-w-md">
+                        <DialogHeader>
+                          <DialogTitle>UP APS Calculation</DialogTitle>
+                          <DialogDescription>
+                            UP uses a simple 7-point system where Life Orientation is excluded from the calculation. Your best 6 subjects (excluding Life Orientation) are used to calculate your APS score.
+                          </DialogDescription>
+                        </DialogHeader>
+                        <div className="space-y-3 text-sm">
+                          <div>
+                            <strong>Life Orientation:</strong> Not counted in UP APS calculation
+                          </div>
+                          <div>
+                            <strong>All Other Subjects:</strong> 7-point scale (80%+ = 7, 70%+ = 6, 60%+ = 5, 50%+ = 4, 40%+ = 3, 30%+ = 2, below 30% = 1)
+                          </div>
+                          <div>
+                            <strong>Total:</strong> Best 6 subjects (excluding Life Orientation)
+                          </div>
+                        </div>
+                      </DialogContent>
+                    </Dialog>
+                  </div>
                   <div className="text-4xl font-bold text-green-600">{apsResults.up}</div>
                 </div>
               )}
