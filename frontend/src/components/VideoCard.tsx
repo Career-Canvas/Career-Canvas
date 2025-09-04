@@ -42,18 +42,18 @@ const VideoCard: React.FC<VideoCardProps> = ({ video }) => {
   };
 
   return (
-    <Card className="overflow-hidden transition-all duration-300 hover:shadow-lg">
-      <CardHeader className="pb-3">
-        <div className="flex items-center justify-between">
-          <h3 className="text-lg font-semibold text-foreground line-clamp-2">
+    <Card className="overflow-hidden transition-all duration-300 hover:shadow-lg flex flex-col h-full">
+      <CardHeader className="pb-3 h-20 flex-shrink-0">
+        <div className="flex items-start justify-between gap-2 h-full">
+          <h3 className="text-lg font-semibold text-foreground line-clamp-2 flex-1">
             {video.title}
           </h3>
-          <Badge variant={getBadgeVariant(video.type)} className="ml-2 flex-shrink-0">
+          <Badge variant={getBadgeVariant(video.type)} className="flex-shrink-0 mt-1">
             {video.type}
           </Badge>
         </div>
       </CardHeader>
-      <CardContent className="p-0">
+      <CardContent className="p-0 flex-1">
         <div className="aspect-video w-full">
           <iframe
             src={getVideoEmbedUrl(video.id)}

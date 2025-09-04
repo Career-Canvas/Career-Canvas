@@ -211,10 +211,20 @@ const UniversitySections = () => {
               <div className="text-center">
                 <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2 flex items-center justify-center gap-2">
                   <Video className="w-6 h-6 text-academic-blue" />
-                  A Day in the Life
+                  {university.shortName === 'Wits' 
+                    ? 'Wits University: The Full Picture'
+                    : university.shortName === 'UJ'
+                    ? 'Find Your Place at UJ'
+                    : 'Life in Jacaranda City: The UP Experience'
+                  }
                 </h3>
                 <p className="text-gray-600 dark:text-gray-300">
-                  Experience campus life through the eyes of students and faculty
+                  {university.shortName === 'Wits'
+                    ? 'From campus tours to student stories, see what it\'s really like to be a "Witsie."'
+                    : university.shortName === 'UJ'
+                    ? 'Explore the vibrant campus, get an inside look at student life, and discover why UJ is for you.'
+                    : 'From campus tours to student vlogs, see what it\'s really like to be a Tukkie.'
+                  }
                 </p>
               </div>
               
