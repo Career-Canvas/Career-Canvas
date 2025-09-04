@@ -24,6 +24,7 @@ jobs:
           node-version: '22.x'
 
       - name: npm install, build, and test
+        working-directory: ./backend # <-- CHANGE: Run commands in the backend folder
         run: |
           npm install
           npm run build --if-present
@@ -33,7 +34,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: node-app
-          path: .
+          path: backend/ # <-- CHANGE: Only upload the backend folder
 
   deploy:
     runs-on: ubuntu-latest
@@ -41,6 +42,9 @@ jobs:
     permissions:
       id-token: write #This is required for requesting the JWT
       contents: read #This is required for actions/checkout
+    environment:
+      name: 'Production'
+      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
 
     steps:
       - name: Download artifact from build job
@@ -61,5 +65,4 @@ jobs:
         with:
           app-name: 'ilostit'
           slot-name: 'Production'
-          package: .
-          
+          package: . # No change needed here, since we are downloading the artifact which now only contains the backend
