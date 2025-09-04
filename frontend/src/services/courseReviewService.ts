@@ -1,7 +1,7 @@
 // Course Review Service - Frontend client for backend API
 // This service calls the backend API which handles Supabase database operations
 
-const API_BASE_URL = 'http://localhost:3001/api';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001/api';
 
 export interface CourseReview {
   id?: string;
