@@ -8,13 +8,24 @@ interface VideoCardProps {
 }
 
 const VideoCard: React.FC<VideoCardProps> = ({ video }) => {
-  // Convert video ID to YouTube embed URL
-  const getYouTubeEmbedUrl = (videoId: string) => {
+  // Convert video ID to YouTube embed URL or TikTok embed
+  const getVideoEmbedUrl = (videoId: string) => {
     // For placeholder IDs, we'll use a default video
     if (videoId.startsWith('placeholder-')) {
       return 'https://www.youtube.com/embed/dQw4w9WgXcQ'; // Default placeholder
     }
+    
+    // Check if it's a TikTok video (longer ID format)
+    if (videoId.length > 15) {
+      return `https://www.tiktok.com/embed/${videoId}`;
+    }
+    
+    // Default to YouTube
     return `https://www.youtube.com/embed/${videoId}`;
+  };
+
+  const isTikTokVideo = (videoId: string) => {
+    return !videoId.startsWith('placeholder-') && videoId.length > 15;
   };
 
   const getBadgeVariant = (type: string) => {
@@ -45,7 +56,7 @@ const VideoCard: React.FC<VideoCardProps> = ({ video }) => {
       <CardContent className="p-0">
         <div className="aspect-video w-full">
           <iframe
-            src={getYouTubeEmbedUrl(video.id)}
+            src={getVideoEmbedUrl(video.id)}
             title={video.title}
             className="w-full h-full rounded-b-lg"
             frameBorder="0"

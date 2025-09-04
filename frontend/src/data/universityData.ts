@@ -40,18 +40,18 @@ export const universities: UniversityInfo[] = [
     ],
     videos: [
       {
-        id: "placeholder-wits-campus-tour",
+        id: "Je-CCEvaZW8",
         title: "Wits Campus Tour - A Complete Walkthrough",
         type: "Campus Tour"
       },
       {
-        id: "placeholder-wits-student-vlog",
-        title: "A Day in the Life of a Wits Student",
+        id: "DQ_ncxrtGNQ",
+        title: "Day in the Life of a Wits Student",
         type: "Student Vlog"
       },
       {
-        id: "placeholder-wits-faculty-focus",
-        title: "Meet the Engineering Faculty at Wits",
+        id: "PKz7cxsx9v0",
+        title: "Why Wits",
         type: "Faculty Focus"
       }
     ]
@@ -68,18 +68,18 @@ export const universities: UniversityInfo[] = [
     ],
     videos: [
       {
-        id: "placeholder-uj-campus-tour",
-        title: "UJ Campus Tour - Kingsway to DFC",
+        id: "UmVaJmReSdE",
+        title: "UJ Campus Tour",
         type: "Campus Tour"
       },
       {
-        id: "placeholder-uj-student-vlog",
-        title: "Student Life at UJ - The Real Experience",
+        id: "0f3vp54EpTA",
+        title: "Why I Chose UJ",
         type: "Student Vlog"
       },
       {
-        id: "placeholder-uj-faculty-focus",
-        title: "Business Faculty Spotlight at UJ",
+        id: "ToKt8urukYQ",
+        title: "Things I Wish I Knew Before Coming to Uni | UJ Edition",
         type: "Faculty Focus"
       }
     ]
@@ -96,18 +96,18 @@ export const universities: UniversityInfo[] = [
     ],
     videos: [
       {
-        id: "placeholder-up-campus-tour",
-        title: "UP Campus Tour - From Hatfield to Groenkloof",
+        id: "zICWqLlrWuc",
+        title: "UP Virtual Campus Tour",
         type: "Campus Tour"
       },
       {
-        id: "placeholder-up-student-vlog",
-        title: "Student Life at UP - The Real Experience",
+        id: "IlswqElOyBU",
+        title: "Uni Diaries - First Week of UP",
         type: "Student Vlog"
       },
       {
-        id: "placeholder-up-faculty-focus",
-        title: "Engineering Faculty Spotlight at UP",
+        id: "2CAw1-_6Uxc",
+        title: "Future Africa | UP",
         type: "Faculty Focus"
       }
     ]
