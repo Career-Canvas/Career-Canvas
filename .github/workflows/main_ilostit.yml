@@ -1,3 +1,6 @@
+# Docs for Azure Web Apps Deploy: https://github.com/Azure/webapps-deploy
+# More GitHub Actions for Azure: https://github.com/Azure/actions
+
 name: Build and deploy Node.js app to Azure Web App - ilostit
 
 on:
@@ -9,8 +12,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
 
     steps:
       - uses: actions/checkout@v4
@@ -22,36 +23,31 @@ jobs:
           cache: 'npm'
           cache-dependency-path: ./backend/package-lock.json
 
-      - name: npm install and build
+      - name: Install dependencies and build
         working-directory: ./backend
         run: |
           npm ci
-          npm run build --if-present  # If this fails, it will error the workflow now (remove --if-present if you confirm the script exists)
+          npm run build --if-present
 
-      - name: List directory for debugging
+      - name: Zip artifact for deployment
         working-directory: ./backend
-        run: |
-          ls -la  # Log root files
-          ls -la dist || echo "No dist folder found"  # Check if dist exists post-build
-
-      - name: Zip backend for deployment
-        working-directory: ./backend
-        run: zip -r ../backend.zip .
+        run: zip -r ../backend.zip . -x "node_modules/*"
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
           name: node-app
           path: backend.zip
-          retention-days: 5
 
   deploy:
     runs-on: ubuntu-latest
     needs: build
-    permissions:
-      contents: read
     environment:
       name: 'Production'
+      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
+    
+    permissions:
+      id-token: write # Required for login with secrets
 
     steps:
       - name: Download artifact from build job
@@ -59,22 +55,29 @@ jobs:
         with:
           name: node-app
 
-      - name: Unzip and list for verification
-        run: |
-          unzip backend.zip -d ./extracted
-          ls -la ./extracted  # Log contents in workflow output for debugging
-          ls -la ./extracted/dist || echo "No dist folder in zip"
-
       - name: Login to Azure
         uses: azure/login@v2
         with:
+          # Use your Azure credentials stored in GitHub secrets
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: Deploy to Azure Web App
+      - name: 'Deploy to Azure Web App'
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
         with:
           app-name: 'ilostit'
           slot-name: 'Production'
-          package: ./backend.zip
-          startup-command: 'npm start'  # Change to this (assumes package.json has a "start" script like "node server.js"). If not, use 'node server.js' or your actual entry point.
+          package: backend.zip
+          # --- FIX 1: Corrected startup command ---
+          startup-command: 'node server.js'
+          # --- FIX 2: Added app settings from secrets (Best Practice) ---
+          # This automatically sets your environment variables in Azure.
+          # You must create these secrets in your GitHub repository settings.
+          app-settings-json: |
+            [
+                { "name": "SUPABASE_URL", "value": "${{ secrets.SUPABASE_URL }}", "slotSetting": false },
+                { "name": "SUPABASE_ANON_KEY", "value": "${{ secrets.SUPABASE_ANON_KEY }}", "slotSetting": false },
+                { "name": "GOOGLE_PERSPECTIVE_API_KEY", "value": "${{ secrets.GOOGLE_PERSPECTIVE_API_KEY }}", "slotSetting": false },
+                { "name": "SCM_DO_BUILD_DURING_DEPLOYMENT", "value": "true", "slotSetting": false }
+            ]
+
