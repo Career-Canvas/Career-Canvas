@@ -192,7 +192,7 @@ const CourseCard = ({ course, isMatched = false }: CourseCardProps) => {
           {/* See More Reviews Button */}
           <button
             onClick={handleSeeMoreReviews}
-            className="w-full mt-4 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors flex items-center justify-center gap-2"
+            className="w-full mt-4 px-4 py-2 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white font-medium rounded-lg transition-colors flex items-center justify-center gap-2"
           >
             <MessageSquare className="w-4 h-4" />
             See More Reviews

@@ -15,6 +15,50 @@ export default function CourseReviewsDisplay({ university, course, onAddReview }
   const [showAllReviews, setShowAllReviews] = useState(false);
   const [showReviewForm, setShowReviewForm] = useState(false);
 
+  // Get university-specific color theme
+  const getUniversityTheme = (university: string) => {
+    if (university.toLowerCase().includes('wits')) {
+      return {
+        primary: 'blue',
+        bgColor: 'bg-blue-50 dark:bg-blue-900/20',
+        textColor: 'text-blue-600 dark:text-blue-400',
+        borderColor: 'border-blue-200 dark:border-blue-700',
+        buttonColor: 'bg-blue-600 hover:bg-blue-700',
+        iconBg: 'bg-blue-100 dark:bg-blue-900/20'
+      };
+    } else if (university.toLowerCase().includes('uj') || university.toLowerCase().includes('johannesburg')) {
+      return {
+        primary: 'orange',
+        bgColor: 'bg-orange-50 dark:bg-orange-900/20',
+        textColor: 'text-orange-600 dark:text-orange-400',
+        borderColor: 'border-orange-200 dark:border-orange-700',
+        buttonColor: 'bg-orange-600 hover:bg-orange-700',
+        iconBg: 'bg-orange-100 dark:bg-orange-900/20'
+      };
+    } else if (university.toLowerCase().includes('up') || university.toLowerCase().includes('pretoria')) {
+      return {
+        primary: 'red',
+        bgColor: 'bg-red-50 dark:bg-red-900/20',
+        textColor: 'text-red-600 dark:text-red-400',
+        borderColor: 'border-red-200 dark:border-red-700',
+        buttonColor: 'bg-red-600 hover:bg-red-700',
+        iconBg: 'bg-red-100 dark:bg-red-900/20'
+      };
+    } else {
+      // Default purple theme
+      return {
+        primary: 'purple',
+        bgColor: 'bg-purple-50 dark:bg-purple-900/20',
+        textColor: 'text-purple-600 dark:text-purple-400',
+        borderColor: 'border-purple-200 dark:border-purple-700',
+        buttonColor: 'bg-purple-600 hover:bg-purple-700',
+        iconBg: 'bg-purple-100 dark:bg-purple-900/20'
+      };
+    }
+  };
+
+  const theme = getUniversityTheme(university);
+
   // Mock reviews for demonstration - will be replaced with actual data fetching
   const mockReviews: CourseReview[] = [
     {
@@ -137,7 +181,7 @@ export default function CourseReviewsDisplay({ university, course, onAddReview }
         </p>
         <button
           onClick={handleAddReview}
-          className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors"
+          className={`inline-flex items-center gap-2 px-4 py-2 ${theme.buttonColor} text-white font-medium rounded-lg transition-colors`}
         >
           <Plus className="w-4 h-4" />
           Write First Review
@@ -155,8 +199,8 @@ export default function CourseReviewsDisplay({ university, course, onAddReview }
             {/* Review Header */}
             <div className="flex items-start justify-between mb-3">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/20 rounded-full flex items-center justify-center">
-                  <User className="w-5 h-5 text-blue-600" />
+                <div className={`w-10 h-10 ${theme.iconBg} rounded-full flex items-center justify-center`}>
+                  <User className={`w-5 h-5 ${theme.textColor}`} />
                 </div>
                 <div>
                   <div className="font-medium text-gray-900 dark:text-white">
@@ -212,7 +256,7 @@ export default function CourseReviewsDisplay({ university, course, onAddReview }
       <div className="text-center pt-4">
         <button
           onClick={handleAddReview}
-          className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors shadow-md hover:shadow-lg"
+          className={`inline-flex items-center gap-2 px-6 py-3 ${theme.buttonColor} text-white font-medium rounded-lg transition-colors shadow-md hover:shadow-lg`}
         >
           <Plus className="w-5 h-5" />
           Add Your Review

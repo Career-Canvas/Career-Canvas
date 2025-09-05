@@ -85,19 +85,19 @@ const CourseRecommendations = ({ apsResults, userSubjects, personalityType }: Co
       {/* Match Summary */}
       <div className="grid md:grid-cols-3 gap-6 mb-12">
         <Card className="text-center p-6">
-          <div className="bg-success-green-light p-3 rounded-full w-fit mx-auto mb-4">
-            <Target className="w-8 h-8 text-success-green" />
+                      <div className="bg-purple-50 dark:bg-purple-900/20 p-3 rounded-full w-fit mx-auto mb-4">
+              <Target className="w-8 h-8 text-purple-600 dark:text-purple-400" />
           </div>
           <h3 className="font-semibold text-gray-900 dark:text-white mb-2">APS Scores</h3>
           <div className="space-y-2">
             {apsResults.wits !== null && (
-              <div className="text-lg font-bold text-success-green">Wits: {apsResults.wits}</div>
+              <div className="text-lg font-bold text-purple-600 dark:text-purple-400">Wits: {apsResults.wits}</div>
             )}
             {apsResults.uj !== null && (
-              <div className="text-lg font-bold text-success-green">UJ: {apsResults.uj}</div>
+              <div className="text-lg font-bold text-purple-600 dark:text-purple-400">UJ: {apsResults.uj}</div>
             )}
             {apsResults.up !== null && (
-              <div className="text-lg font-bold text-success-green">UP: {apsResults.up}</div>
+              <div className="text-lg font-bold text-purple-600 dark:text-purple-400">UP: {apsResults.up}</div>
             )}
           </div>
         </Card>

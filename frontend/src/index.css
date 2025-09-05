@@ -44,8 +44,20 @@ All colors MUST be HSL.
     --success-green: 142 71% 45%;
     --success-green-light: 142 76% 96%;
     
+    /* University-specific colors */
+    --wits-blue: 214 100% 37%;
+    --wits-blue-light: 214 100% 94%;
+    --uj-orange: 25 95% 53%;
+    --uj-orange-light: 25 100% 96%;
+    --up-red: 0 84% 60%;
+    --up-red-light: 0 100% 96%;
+    
+    /* Primary button colors (matching homepage gradient) */
+    --primary-purple: 270 100% 20%;
+    --primary-purple-light: 280 100% 30%;
+    
     /* Gradients */
-    --gradient-hero: linear-gradient(135deg, hsl(214 100% 37%), hsl(219 78% 46%));
+    --gradient-hero: linear-gradient(135deg, hsl(270 100% 20%), hsl(280 100% 30%));
     --gradient-card: linear-gradient(145deg, hsl(0 0% 100%), hsl(210 40% 98%));
     --gradient-accent: linear-gradient(135deg, hsl(43 96% 56%), hsl(38 92% 50%));
     
@@ -114,8 +126,20 @@ All colors MUST be HSL.
     --success-green: 142 71% 60%;
     --success-green-light: 142 76% 20%;
     
+    /* University-specific colors - Dark Mode */
+    --wits-blue: 214 100% 70%;
+    --wits-blue-light: 214 100% 20%;
+    --uj-orange: 25 95% 70%;
+    --uj-orange-light: 25 100% 20%;
+    --up-red: 0 84% 70%;
+    --up-red-light: 0 100% 20%;
+    
+    /* Primary button colors - Dark Mode */
+    --primary-purple: 270 100% 15%;
+    --primary-purple-light: 280 100% 25%;
+    
     /* Gradients - Dark Mode */
-    --gradient-hero: linear-gradient(135deg, hsl(214 100% 70%), hsl(219 78% 60%));
+    --gradient-hero: linear-gradient(135deg, hsl(270 100% 15%), hsl(280 100% 25%));
     --gradient-card: linear-gradient(145deg, hsl(222.2 84% 4.9%), hsl(217.2 32.6% 17.5%));
     --gradient-accent: linear-gradient(135deg, hsl(43 96% 70%), hsl(38 92% 60%));
     

@@ -226,7 +226,7 @@ export default function CourseReviewDemo() {
                 <div className="flex gap-4 justify-center">
                   <button
                     onClick={() => setActiveTab('form')}
-                    className="px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors flex items-center gap-2"
+                    className="px-8 py-4 bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-lg transition-colors flex items-center gap-2"
                   >
                     <MessageSquare className="w-5 h-5" />
                     Write a Review

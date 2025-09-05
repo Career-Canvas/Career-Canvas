@@ -169,7 +169,7 @@ const APSCalculator = ({ onAPSCalculated }: APSCalculatorProps) => {
         }
       `}</style>
       <Card className="shadow-card hover:shadow-card-hover transition-all duration-300 rounded-2xl">
-        <CardHeader className="bg-gradient-to-r from-blue-700 to-indigo-800 text-white rounded-t-2xl p-6">
+        <CardHeader className="bg-gradient-to-r from-purple-600 to-purple-700 text-white rounded-t-2xl p-6">
           <CardTitle className="flex items-center gap-2 text-2xl font-bold">
             <Calculator className="w-8 h-8" />
             APS Score Calculator
@@ -348,7 +348,7 @@ const APSCalculator = ({ onAPSCalculated }: APSCalculatorProps) => {
 
           <Button 
             onClick={calculateAllAPS}
-            className="w-full mt-6 bg-blue-600 hover:bg-blue-700 text-white shadow-lg transition-all duration-300 transform hover:scale-105 rounded-full"
+            className="w-full mt-6 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white shadow-lg transition-all duration-300 transform hover:scale-105 rounded-full"
             size="lg"
           >
             <Calculator className="w-5 h-5 mr-2" />
@@ -358,13 +358,13 @@ const APSCalculator = ({ onAPSCalculated }: APSCalculatorProps) => {
           {showResult && (
             <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
               {apsResults.wits !== null && (
-                <div className="p-6 bg-gray-100 dark:bg-gray-800 rounded-lg shadow-sm text-center relative">
+                <div className="p-6 bg-blue-50 dark:bg-blue-900/20 rounded-lg shadow-sm text-center relative">
                   <div className="flex items-center justify-center gap-2 mb-2">
                     <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Wits APS</h3>
                     <Dialog>
                       <DialogTrigger asChild>
-                        <Button variant="ghost" size="sm" className="h-6 w-6 p-0 hover:bg-gray-200 dark:hover:bg-gray-700">
-                          <Info className="h-4 w-4 text-gray-600 dark:text-gray-400" />
+                        <Button variant="ghost" size="sm" className="h-6 w-6 p-0 hover:bg-blue-100 dark:hover:bg-blue-900/30">
+                          <Info className="h-4 w-4 text-blue-600" />
                         </Button>
                       </DialogTrigger>
                       <DialogContent className="max-w-md">
@@ -391,17 +391,17 @@ const APSCalculator = ({ onAPSCalculated }: APSCalculatorProps) => {
                       </DialogContent>
                     </Dialog>
                   </div>
-                  <div className="text-4xl font-bold text-gray-800 dark:text-gray-200">{apsResults.wits}</div>
+                  <div className="text-4xl font-bold text-blue-600">{apsResults.wits}</div>
                 </div>
               )}
               {apsResults.uj !== null && (
-                <div className="p-6 bg-red-50 dark:bg-red-900/20 rounded-lg shadow-sm text-center relative">
+                <div className="p-6 bg-orange-50 dark:bg-orange-900/20 rounded-lg shadow-sm text-center relative">
                   <div className="flex items-center justify-center gap-2 mb-2">
                     <h3 className="text-lg font-semibold text-gray-900 dark:text-white">UJ APS</h3>
                     <Dialog>
                       <DialogTrigger asChild>
-                        <Button variant="ghost" size="sm" className="h-6 w-6 p-0 hover:bg-red-100 dark:hover:bg-red-900/30">
-                          <Info className="h-4 w-4 text-red-600" />
+                        <Button variant="ghost" size="sm" className="h-6 w-6 p-0 hover:bg-orange-100 dark:hover:bg-orange-900/30">
+                          <Info className="h-4 w-4 text-orange-600" />
                         </Button>
                       </DialogTrigger>
                       <DialogContent className="max-w-md">
@@ -425,17 +425,17 @@ const APSCalculator = ({ onAPSCalculated }: APSCalculatorProps) => {
                       </DialogContent>
                     </Dialog>
                   </div>
-                  <div className="text-4xl font-bold text-red-600">{apsResults.uj}</div>
+                  <div className="text-4xl font-bold text-orange-600">{apsResults.uj}</div>
                 </div>
               )}
               {apsResults.up !== null && (
-                <div className="p-6 bg-green-50 dark:bg-green-900/20 rounded-lg shadow-sm text-center relative">
+                <div className="p-6 bg-red-50 dark:bg-red-900/20 rounded-lg shadow-sm text-center relative">
                   <div className="flex items-center justify-center gap-2 mb-2">
                     <h3 className="text-lg font-semibold text-gray-900 dark:text-white">UP APS</h3>
                     <Dialog>
                       <DialogTrigger asChild>
-                        <Button variant="ghost" size="sm" className="h-6 w-6 p-0 hover:bg-green-100 dark:hover:bg-green-900/30">
-                          <Info className="h-4 w-4 text-green-600" />
+                        <Button variant="ghost" size="sm" className="h-6 w-6 p-0 hover:bg-red-100 dark:hover:bg-red-900/30">
+                          <Info className="h-4 w-4 text-red-600" />
                         </Button>
                       </DialogTrigger>
                       <DialogContent className="max-w-md">
@@ -459,7 +459,7 @@ const APSCalculator = ({ onAPSCalculated }: APSCalculatorProps) => {
                       </DialogContent>
                     </Dialog>
                   </div>
-                  <div className="text-4xl font-bold text-green-600">{apsResults.up}</div>
+                  <div className="text-4xl font-bold text-red-600">{apsResults.up}</div>
                 </div>
               )}
             </div>

@@ -86,14 +86,14 @@ const UniversitySections = () => {
                  ? 'bg-blue-950/30 backdrop-blur-sm border border-blue-300/40' 
                  : university.shortName === 'UJ' 
                  ? 'bg-orange-500/20 backdrop-blur-sm border border-orange-200/30'
-                 : 'bg-gradient-to-br from-blue-900/20 to-blue-400/20 backdrop-blur-sm border border-blue-200/30'
+                 : 'bg-gradient-to-br from-red-900/20 to-red-400/20 backdrop-blur-sm border border-red-200/30'
              }`}>
                <h3 className={`text-3xl font-bold mb-2 ${
                  university.shortName === 'Wits' 
                    ? 'text-blue-950 dark:text-blue-200' 
                    : university.shortName === 'UJ' 
                    ? 'text-orange-700 dark:text-orange-300'
-                   : 'text-blue-800 dark:text-blue-200'
+                   : 'text-red-800 dark:text-red-200'
                }`}>
                  {university.name}
                </h3>
@@ -102,7 +102,7 @@ const UniversitySections = () => {
                    ? 'text-blue-900/90 dark:text-blue-200/90' 
                    : university.shortName === 'UJ' 
                    ? 'text-orange-700/80 dark:text-orange-300/80'
-                   : 'text-blue-700/80 dark:text-blue-200/80'
+                   : 'text-red-700/80 dark:text-red-200/80'
                }`}>
                  {university.description}
                </p>
@@ -111,8 +111,20 @@ const UniversitySections = () => {
             <div className="grid lg:grid-cols-2 gap-8">
               {/* Campus Tips */}
               <Card className="shadow-card hover:shadow-card-hover transition-all duration-300">
-                <CardHeader className="bg-warm-accent-light">
-                  <CardTitle className="flex items-center gap-2 text-warm-accent">
+                <CardHeader className={`${
+                  university.shortName === 'Wits' 
+                    ? 'bg-blue-50 dark:bg-blue-900/20' 
+                    : university.shortName === 'UJ' 
+                    ? 'bg-orange-50 dark:bg-orange-900/20'
+                    : 'bg-red-50 dark:bg-red-900/20'
+                }`}>
+                  <CardTitle className={`flex items-center gap-2 ${
+                    university.shortName === 'Wits' 
+                      ? 'text-blue-600 dark:text-blue-400' 
+                      : university.shortName === 'UJ' 
+                      ? 'text-orange-600 dark:text-orange-400'
+                      : 'text-red-600 dark:text-red-400'
+                  }`}>
                     <MapPin className="w-6 h-6" />
                     Campus Insider Tips
                   </CardTitle>
@@ -124,7 +136,13 @@ const UniversitySections = () => {
                   <div className="space-y-4">
                                          {university.campusTips.map((tip, index) => (
                        <div key={index} className="flex gap-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                         <span className="text-warm-accent font-medium text-sm mt-1">
+                         <span className={`font-medium text-sm mt-1 ${
+                           university.shortName === 'Wits' 
+                             ? 'text-blue-600 dark:text-blue-400' 
+                             : university.shortName === 'UJ' 
+                             ? 'text-orange-600 dark:text-orange-400'
+                             : 'text-red-600 dark:text-red-400'
+                         }`}>
                            {String(index + 1).padStart(2, '0')}
                          </span>
                          <p className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">{tip}</p>
@@ -136,8 +154,20 @@ const UniversitySections = () => {
 
               {/* Student Reviews */}
               <Card className="shadow-card hover:shadow-card-hover transition-all duration-300">
-                <CardHeader className="bg-red-50">
-                  <CardTitle className="flex items-center gap-2 text-red-500">
+                <CardHeader className={`${
+                  university.shortName === 'Wits' 
+                    ? 'bg-blue-50 dark:bg-blue-900/20' 
+                    : university.shortName === 'UJ' 
+                    ? 'bg-orange-50 dark:bg-orange-900/20'
+                    : 'bg-red-50 dark:bg-red-900/20'
+                }`}>
+                  <CardTitle className={`flex items-center gap-2 ${
+                    university.shortName === 'Wits' 
+                      ? 'text-blue-600 dark:text-blue-400' 
+                      : university.shortName === 'UJ' 
+                      ? 'text-orange-600 dark:text-orange-400'
+                      : 'text-red-600 dark:text-red-400'
+                  }`}>
                     <Heart className="w-6 h-6" />
                     Student Reviews
                   </CardTitle>
@@ -150,7 +180,13 @@ const UniversitySections = () => {
                     {isLoading && <p>Loading reviews...</p>}
                     {error && <p className="text-red-500">{error}</p>}
                     {!isLoading && !error && reviews.filter(review => review.universityName === university.name).map((review, index) => (
-                      <div key={index} className="border-l-4 border-red-200 pl-4 py-2">
+                      <div key={index} className={`border-l-4 pl-4 py-2 ${
+                        university.shortName === 'Wits' 
+                          ? 'border-blue-200 dark:border-blue-700' 
+                          : university.shortName === 'UJ' 
+                          ? 'border-orange-200 dark:border-orange-700'
+                          : 'border-red-200 dark:border-red-700'
+                      }`}>
                         <div className="flex items-center justify-between mb-2">
                           <div className="flex items-center gap-2">
                             {getCategoryIcon(review.category)}
@@ -194,7 +230,13 @@ const UniversitySections = () => {
                       ) : (
                         <Button
                           onClick={() => setShowReviewForm(university.name)}
-                          className="w-full bg-red-500 hover:bg-red-600 text-white"
+                          className={`w-full text-white ${
+                            university.shortName === 'Wits' 
+                              ? 'bg-blue-600 hover:bg-blue-700'
+                              : university.shortName === 'UJ'
+                              ? 'bg-orange-600 hover:bg-orange-700'
+                              : 'bg-red-600 hover:bg-red-700'
+                          }`}
                           size="sm"
                         >
                           Submit Review
@@ -210,7 +252,13 @@ const UniversitySections = () => {
             <div className="space-y-6">
               <div className="text-center">
                 <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2 flex items-center justify-center gap-2">
-                  <Video className="w-6 h-6 text-academic-blue" />
+                  <Video className={`w-6 h-6 ${
+                    university.shortName === 'Wits' 
+                      ? 'text-blue-600 dark:text-blue-400' 
+                      : university.shortName === 'UJ' 
+                      ? 'text-orange-600 dark:text-orange-400'
+                      : 'text-red-600 dark:text-red-400'
+                  }`} />
                   {university.shortName === 'Wits' 
                     ? 'Wits University: The Full Picture'
                     : university.shortName === 'UJ'

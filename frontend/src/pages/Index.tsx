@@ -87,7 +87,7 @@ const Index = () => {
               disabled={!isBothCompleted}
               className={`px-8 py-4 rounded-full text-lg font-semibold transition-all duration-300 ${
                 isBothCompleted
-                  ? 'bg-academic-blue hover:bg-academic-blue/90 text-white shadow-lg hover:shadow-xl transform hover:scale-105'
+                  ? 'bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white shadow-lg hover:shadow-xl transform hover:scale-105'
                   : 'bg-gray-300 text-gray-500 cursor-not-allowed'
               }`}
             >
@@ -124,11 +124,6 @@ const Index = () => {
         </section>
       )}
 
-      {/* University Sections */}
-      <section id="university-sections" className="py-16 bg-gray-50 dark:bg-gray-900">
-        <UniversitySections />
-      </section>
-
       {/* Course Reviews Section */}
       <section className="py-16 bg-white dark:bg-gray-800">
         <div className="max-w-7xl mx-auto px-4">
@@ -155,8 +150,13 @@ const Index = () => {
         </div>
       </section>
 
+      {/* University Sections */}
+      <section id="university-sections" className="py-16 bg-gray-50 dark:bg-gray-900">
+        <UniversitySections />
+      </section>
+
       {/* Footer */}
-      <footer className="bg-academic-blue text-white py-12">
+      <footer className="bg-gradient-to-r from-purple-600 to-purple-700 text-white py-12">
         <div className="max-w-7xl mx-auto px-4 text-center">
           <h3 className="text-2xl font-bold mb-4">Career Canvas</h3>
           <p className="text-white/80 mb-6 max-w-2xl mx-auto">
@@ -164,7 +164,7 @@ const Index = () => {
             by combining academic requirements with authentic student experiences.
           </p>
           <div className="text-sm text-white/60">
-            <p>© 2025 Career Canvas. Built with ❤️ for South African students.</p>
+            <p>© 2025 Career Canvas. Built for South African students.</p>
           </div>
         </div>
       </footer>
