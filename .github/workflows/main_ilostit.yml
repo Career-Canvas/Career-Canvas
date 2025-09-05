@@ -20,21 +20,18 @@ jobs:
         with:
           node-version: '22.x'
 
-      - name: npm install and build
+      - name: npm install
         working-directory: ./backend
-        run: |
-          npm install
-          npm run build --if-present
+        run: npm install
 
       - name: Prepare deployment package
         working-directory: ./backend
         run: |
-          # Create deployment folder
           mkdir -p ../deploy
           # Copy package files
           cp package.json package-lock.json ../deploy/
-          # Copy build output (adjust 'dist' if your build folder is different)
-          cp -r dist ../deploy/
+          # Copy all source files (adjust if you want to exclude dev files)
+          cp -r * ../deploy/
 
       - name: Zip deployment folder
         run: |
