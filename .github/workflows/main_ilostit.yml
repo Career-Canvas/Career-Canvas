@@ -16,41 +16,28 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Set up Node.js version
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4  # Updated to latest version for better compatibility
         with:
           node-version: '22.x'
+          cache: 'npm'
+          cache-dependency-path: ./backend/package-lock.json  # Enable caching for faster builds
 
-      - name: npm install
+      - name: npm install and build
         working-directory: ./backend
-        run: npm install
-
-      - name: Prepare deployment package
         run: |
-          # Create a clean deployment folder
-          mkdir -p deploy
+          npm ci  # Use ci for cleaner installs from package-lock.json
+          npm run build --if-present
 
-          # Copy package files (skip if missing)
-          cp backend/package.json deploy/ 2>/dev/null || true
-          cp backend/package-lock.json deploy/ 2>/dev/null || true
-
-          # Copy entry point JS files (skip if none)
-          cp backend/*.js deploy/ 2>/dev/null || true
-
-          # Copy runtime folders if they exist
-          [ -d backend/routes ] && cp -r backend/routes deploy/
-          [ -d backend/public ] && cp -r backend/public deploy/
-          [ -d backend/views ] && cp -r backend/views deploy/
-
-      - name: Zip deployment folder
-        run: |
-          cd deploy
-          zip -r ../deploy.zip .
+      - name: Zip backend for deployment
+        working-directory: ./backend
+        run: zip -r ../backend.zip .  # This zips contents at root, which is correct
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
           name: node-app
-          path: deploy.zip
+          path: backend.zip
+          retention-days: 5  # Optional: Retain artifact for debugging
 
   deploy:
     runs-on: ubuntu-latest
@@ -66,6 +53,9 @@ jobs:
         with:
           name: node-app
 
+      - name: Unzip artifact for verification
+        run: unzip backend.zip -d ./extracted  # Optional: Unzip to verify structure locally in workflow logs
+
       - name: Login to Azure
         uses: azure/login@v2
         with:
@@ -77,4 +67,5 @@ jobs:
         with:
           app-name: 'ilostit'
           slot-name: 'Production'
-          package: ./deploy.zip
+          package: ./backend.zip  # Deploy the zip directly
+          startup-command: 'node dist/server.js'  # Optional: Customize if your entry point is not app.js/index.js (adjust as needed)
