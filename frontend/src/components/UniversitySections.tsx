@@ -293,27 +293,6 @@ const UniversitySections = () => {
         ))}
       </div>
 
-      {/* Call to Action */}
-      <div className="mt-16 text-center">
-        <Card className="bg-gradient-hero text-white p-8 shadow-card-hover">
-          <CardContent className="p-0">
-            <h3 className="text-2xl font-bold mb-4">
-              Help Future Students Make Better Choices
-            </h3>
-            <p className="text-white/90 mb-6 max-w-2xl mx-auto">
-              Your experiences matter! Share honest reviews about your university to help other students 
-              make informed decisions about their academic future.
-            </p>
-            <Button 
-              variant="secondary" 
-              size="lg"
-              className="bg-white text-academic-blue hover:bg-white/90"
-            >
-              Join Our Community
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
     </div>
   );
 };

@@ -1,4 +1,7 @@
-const API_BASE_URL = 'https://ilostit-aeh2e8a0b9h8bbc4.westeurope-01.azurewebsites.net/api';
+// Dynamic API base URL that works both locally and on deployed site
+const API_BASE_URL = process.env.NODE_ENV === 'production' 
+  ? 'https://ilostit-aeh2e8a0b9h8bbc4.westeurope-01.azurewebsites.net/api'
+  : 'http://localhost:3001/api';
 
 export interface ReviewSubmission {
   reviewText: string;

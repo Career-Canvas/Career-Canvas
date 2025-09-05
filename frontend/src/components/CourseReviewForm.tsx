@@ -15,9 +15,10 @@ interface CourseReview {
 interface CourseReviewFormProps {
   preSelectedUniversity?: string;
   preSelectedCourse?: string;
+  onReviewSubmitted?: () => void;
 }
 
-export default function CourseReviewForm({ preSelectedUniversity, preSelectedCourse }: CourseReviewFormProps) {
+export default function CourseReviewForm({ preSelectedUniversity, preSelectedCourse, onReviewSubmitted }: CourseReviewFormProps) {
   const [formData, setFormData] = useState<CourseReview>({
     author: "",
     email: "",
@@ -148,6 +149,11 @@ export default function CourseReviewForm({ preSelectedUniversity, preSelectedCou
         });
         setToxicityResult(null);
         setAiTestPassed(false);
+        
+        // Call the callback to refresh review count
+        if (onReviewSubmitted) {
+          onReviewSubmitted();
+        }
       } else {
         setError(response.message || "Failed to submit review. Please try again.");
       }
@@ -175,8 +181,8 @@ export default function CourseReviewForm({ preSelectedUniversity, preSelectedCou
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
         <div className="text-center mb-6">
           <div className="flex items-center justify-center gap-3 mb-4">
-            <div className="bg-blue-100 dark:bg-blue-900/20 p-3 rounded-full">
-              <BookOpen className="w-6 h-6 text-blue-600" />
+            <div className="bg-purple-100 dark:bg-purple-900/20 p-3 rounded-full">
+              <BookOpen className="w-6 h-6 text-purple-600" />
             </div>
             <div className="bg-purple-100 dark:bg-purple-900/20 p-3 rounded-full">
               <GraduationCap className="w-6 h-6 text-purple-600" />
@@ -204,7 +210,7 @@ export default function CourseReviewForm({ preSelectedUniversity, preSelectedCou
                 type="text"
                 value={formData.author}
                 onChange={(e) => handleInputChange('author', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 dark:bg-gray-700 dark:text-white"
                 placeholder="Enter your name"
               />
             </div>
@@ -216,7 +222,7 @@ export default function CourseReviewForm({ preSelectedUniversity, preSelectedCou
                 type="email"
                 value={formData.email}
                 onChange={(e) => handleInputChange('email', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 dark:bg-gray-700 dark:text-white"
                 placeholder="Enter your email"
               />
             </div>
@@ -231,7 +237,7 @@ export default function CourseReviewForm({ preSelectedUniversity, preSelectedCou
               <select
                 value={formData.university}
                 onChange={(e) => handleInputChange('university', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 dark:bg-gray-700 dark:text-white"
                 required
                 disabled={!!preSelectedUniversity}
               >
@@ -243,7 +249,7 @@ export default function CourseReviewForm({ preSelectedUniversity, preSelectedCou
                 ))}
               </select>
               {preSelectedUniversity && (
-                <p className="text-xs text-blue-600 dark:text-blue-400 mt-1">
+                <p className="text-xs text-purple-600 dark:text-purple-400 mt-1">
                   Pre-selected for {preSelectedUniversity}
                 </p>
               )}
@@ -255,7 +261,7 @@ export default function CourseReviewForm({ preSelectedUniversity, preSelectedCou
               <select
                 value={formData.course}
                 onChange={(e) => handleInputChange('course', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 dark:bg-gray-700 dark:text-white"
                 required
                 disabled={!formData.university || !!preSelectedCourse}
               >
@@ -267,7 +273,7 @@ export default function CourseReviewForm({ preSelectedUniversity, preSelectedCou
                 ))}
               </select>
               {preSelectedCourse && (
-                <p className="text-xs text-blue-600 dark:text-blue-400 mt-1">
+                <p className="text-xs text-purple-600 dark:text-purple-400 mt-1">
                   Pre-selected for {preSelectedCourse}
                 </p>
               )}
@@ -304,7 +310,7 @@ export default function CourseReviewForm({ preSelectedUniversity, preSelectedCou
               value={formData.reviewText}
               onChange={(e) => handleInputChange('reviewText', e.target.value)}
               rows={6}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 dark:bg-gray-700 dark:text-white"
               placeholder="Share your experience with this degree program. What did you like? What could be improved? What advice would you give to future students?"
               required
             />
@@ -361,10 +367,10 @@ export default function CourseReviewForm({ preSelectedUniversity, preSelectedCou
 
             {/* Toxicity Analysis Result */}
             {toxicityResult && (
-              <div className="mt-4 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+              <div className="mt-4 p-4 bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-lg">
                 <div className="flex items-center gap-2 mb-3">
-                  <Shield className="w-5 h-5 text-blue-600" />
-                  <span className="text-blue-800 dark:text-blue-200 font-medium">Content Analysis Complete</span>
+                  <Shield className="w-5 h-5 text-purple-600" />
+                  <span className="text-purple-800 dark:text-purple-200 font-medium">Content Analysis Complete</span>
                 </div>
                 
                 <div className="space-y-3">

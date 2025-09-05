@@ -59,27 +59,6 @@ export default function CourseReviewsDisplay({ university, course, onAddReview }
 
   const theme = getUniversityTheme(university);
 
-  // Mock reviews for demonstration - will be replaced with actual data fetching
-  const mockReviews: CourseReview[] = [
-    {
-      id: "1",
-      author: "Sarah M.",
-      university_name: university,
-      course_name: course,
-      review_text: "This program exceeded my expectations! The professors are incredibly knowledgeable and the practical projects really help solidify the concepts. The career support is excellent too.",
-      created_at: "2024-01-15T10:30:00Z",
-      rating: 5
-    },
-    {
-      id: "2",
-      author: "David K.",
-      university_name: university,
-      course_name: course,
-      review_text: "Great course structure and the lecturers are very approachable. The workload is manageable if you stay organized. Highly recommend for anyone interested in this field.",
-      created_at: "2024-01-10T14:20:00Z",
-      rating: 4
-    }
-  ];
 
   useEffect(() => {
     fetchReviews();
@@ -92,8 +71,8 @@ export default function CourseReviewsDisplay({ university, course, onAddReview }
       setReviews(fetchedReviews);
     } catch (error) {
       console.error('Error fetching reviews:', error);
-      // Fallback to mock data if API fails
-      setReviews(mockReviews);
+      // Set empty array if API fails
+      setReviews([]);
     } finally {
       setIsLoading(false);
     }
@@ -231,7 +210,7 @@ export default function CourseReviewsDisplay({ university, course, onAddReview }
             <div className="flex items-center justify-end pt-3 border-t border-gray-200 dark:border-gray-700">
               <button
                 onClick={handleAddReview}
-                className="text-blue-600 hover:text-blue-700 text-sm font-medium hover:underline transition-colors"
+                className={`text-sm font-medium hover:underline transition-colors ${theme.textColor} hover:opacity-80`}
               >
                 Reply to this review
               </button>
@@ -245,7 +224,7 @@ export default function CourseReviewsDisplay({ university, course, onAddReview }
         <div className="text-center">
           <button
             onClick={() => setShowAllReviews(!showAllReviews)}
-            className="px-4 py-2 text-blue-600 hover:text-blue-700 font-medium hover:underline transition-colors"
+            className={`px-4 py-2 font-medium hover:underline transition-colors ${theme.textColor} hover:opacity-80`}
           >
             {showAllReviews ? 'Show Less' : `Show ${reviews.length - 2} More Reviews`}
           </button>

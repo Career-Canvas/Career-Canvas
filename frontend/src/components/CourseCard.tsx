@@ -21,6 +21,7 @@ const CourseCard = ({ course, isMatched = false }: CourseCardProps) => {
       setIsLoadingReviews(true);
       try {
         const fetchedReviews = await getCourseReviews(course.university, course.courseName);
+        
         // Sort by rating (highest first) and take top 2
         const topReviews = fetchedReviews
           .sort((a, b) => (b.rating || 0) - (a.rating || 0))
@@ -28,6 +29,7 @@ const CourseCard = ({ course, isMatched = false }: CourseCardProps) => {
         setReviews(topReviews);
       } catch (error) {
         console.error('Error fetching reviews:', error);
+        // Set empty array if API fails
         setReviews([]);
       } finally {
         setIsLoadingReviews(false);

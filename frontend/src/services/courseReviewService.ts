@@ -1,7 +1,10 @@
 // Course Review Service - Frontend client for backend API
 // This service calls the backend API which handles Supabase database operations
 
-const API_BASE_URL = 'https://ilostit-aeh2e8a0b9h8bbc4.westeurope-01.azurewebsites.net/api';
+// Dynamic API base URL that works both locally and on deployed site
+const API_BASE_URL = process.env.NODE_ENV === 'production' 
+  ? 'https://ilostit-aeh2e8a0b9h8bbc4.westeurope-01.azurewebsites.net/api'
+  : 'http://localhost:3001/api';
 
 export interface CourseReview {
   id?: string;
@@ -76,13 +79,16 @@ export async function submitCourseReview(reviewData: CourseReview): Promise<Cour
  */
 export async function getCourseReviews(university: string, course: string): Promise<CourseReview[]> {
   try {
-    const response = await fetch(`${API_BASE_URL}/course-reviews/${encodeURIComponent(university)}/${encodeURIComponent(course)}`);
+    const url = `${API_BASE_URL}/course-reviews/${encodeURIComponent(university)}/${encodeURIComponent(course)}`;
+    
+    const response = await fetch(url);
     
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
     const result = await response.json();
+    
     if (!result.success) {
       throw new Error('API returned unsuccessful response for getting course reviews.');
     }

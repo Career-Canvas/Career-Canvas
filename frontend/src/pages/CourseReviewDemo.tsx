@@ -3,11 +3,40 @@ import { BookOpen, MessageSquare, Star, Users, TrendingUp } from "lucide-react";
 import CourseReviewForm from "../components/CourseReviewForm";
 import CourseReviewsDisplay from "../components/CourseReviewsDisplay";
 import { courses, universities } from "../data/universityData";
+import { getAllCourseReviews } from "../services/courseReviewService";
 
 export default function CourseReviewDemo() {
   const [selectedCourse, setSelectedCourse] = useState(courses[0]);
   const [selectedUniversity, setSelectedUniversity] = useState(courses[0].university);
   const [activeTab, setActiveTab] = useState('overview');
+  const [totalReviews, setTotalReviews] = useState(0);
+
+  // Function to refresh review count
+  const refreshReviewCount = async () => {
+    try {
+      const allReviews = await getAllCourseReviews();
+      setTotalReviews(allReviews.length);
+    } catch (error) {
+      console.error('Error refreshing review count:', error);
+    }
+  };
+
+  // Get university-specific icon color
+  const getUniversityIconColor = (university: string) => {
+    if (university.toLowerCase().includes('wits')) {
+      return 'text-blue-600 dark:text-blue-400';
+    } else if (university.toLowerCase().includes('uj') || university.toLowerCase().includes('johannesburg')) {
+      return 'text-orange-600 dark:text-orange-400';
+    } else if (university.toLowerCase().includes('up') || university.toLowerCase().includes('pretoria')) {
+      return 'text-red-600 dark:text-red-400';
+    }
+    return 'text-purple-600 dark:text-purple-400';
+  };
+
+  // Fetch total review count
+  useEffect(() => {
+    refreshReviewCount();
+  }, []);
 
   // Handle URL parameters for scrolling to specific course
   useEffect(() => {
@@ -41,14 +70,14 @@ export default function CourseReviewDemo() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-purple-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
       <div className="container mx-auto px-4 py-8">
         {/* Navigation Breadcrumb */}
         <div className="mb-8">
           <nav className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400">
             <a 
               href="/" 
-              className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+              className="hover:text-purple-600 dark:hover:text-purple-400 transition-colors"
             >
               Home
             </a>
@@ -70,25 +99,25 @@ export default function CourseReviewDemo() {
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 text-center">
-            <BookOpen className="w-8 h-8 text-blue-600 mx-auto mb-3" />
-            <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-1">24</h3>
+            <BookOpen className="w-8 h-8 text-purple-600 mx-auto mb-3" />
+            <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-1">{courses.length}</h3>
             <p className="text-gray-600 dark:text-gray-400">Degree Programs</p>
           </div>
           
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 text-center">
-            <MessageSquare className="w-8 h-8 text-blue-500 mx-auto mb-3" />
-            <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-1">156</h3>
+            <MessageSquare className="w-8 h-8 text-purple-500 mx-auto mb-3" />
+            <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-1">{totalReviews}</h3>
             <p className="text-gray-600 dark:text-gray-400">Student Reviews</p>
           </div>
           
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 text-center">
-            <Users className="w-8 h-8 text-blue-600 mx-auto mb-3" />
-            <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-1">3</h3>
+            <Users className="w-8 h-8 text-purple-600 mx-auto mb-3" />
+            <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-1">{universities.length}</h3>
             <p className="text-gray-600 dark:text-gray-400">Universities</p>
           </div>
           
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 text-center">
-            <TrendingUp className="w-8 h-8 text-blue-600 mx-auto mb-3" />
+            <TrendingUp className="w-8 h-8 text-purple-600 mx-auto mb-3" />
             <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-1">98%</h3>
             <p className="text-gray-600 dark:text-gray-400">Content Safe</p>
           </div>
@@ -102,7 +131,7 @@ export default function CourseReviewDemo() {
               onClick={() => setActiveTab('overview')}
               className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
                 activeTab === 'overview'
-                  ? 'bg-white dark:bg-gray-700 text-blue-600 dark:text-blue-400 shadow-sm'
+                  ? 'bg-white dark:bg-gray-700 text-purple-600 dark:text-purple-400 shadow-sm'
                   : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
               }`}
             >
@@ -112,7 +141,7 @@ export default function CourseReviewDemo() {
               onClick={() => setActiveTab('form')}
               className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
                 activeTab === 'form'
-                  ? 'bg-white dark:bg-gray-700 text-blue-600 dark:text-blue-400 shadow-sm'
+                  ? 'bg-white dark:bg-gray-700 text-purple-600 dark:text-purple-400 shadow-sm'
                   : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
               }`}
             >
@@ -122,7 +151,7 @@ export default function CourseReviewDemo() {
               onClick={() => setActiveTab('display')}
               className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
                 activeTab === 'display'
-                  ? 'bg-white dark:bg-gray-700 text-blue-600 dark:text-blue-400 shadow-sm'
+                  ? 'bg-white dark:bg-gray-700 text-purple-600 dark:text-purple-400 shadow-sm'
                   : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
               }`}
             >
@@ -137,12 +166,12 @@ export default function CourseReviewDemo() {
                 {/* Features */}
                 <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
                   <div className="flex items-center gap-2 mb-4">
-                    <Star className="w-5 h-5 text-blue-500" />
+                    <Star className="w-5 h-5 text-purple-500" />
                     <h3 className="text-xl font-semibold text-gray-900 dark:text-white">Key Features</h3>
                   </div>
                   <div className="space-y-4">
                     <div className="flex items-start gap-3">
-                      <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
+                      <div className="w-2 h-2 bg-purple-500 rounded-full mt-2 flex-shrink-0"></div>
                       <div>
                         <h4 className="font-medium">AI-Powered Content Moderation</h4>
                         <p className="text-sm text-gray-600 dark:text-gray-400">
@@ -152,7 +181,7 @@ export default function CourseReviewDemo() {
                     </div>
                     
                     <div className="flex items-start gap-3">
-                      <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
+                      <div className="w-2 h-2 bg-purple-500 rounded-full mt-2 flex-shrink-0"></div>
                       <div>
                         <h4 className="font-medium">Dynamic Course Selection</h4>
                         <p className="text-sm text-gray-600 dark:text-gray-400">
@@ -162,7 +191,7 @@ export default function CourseReviewDemo() {
                     </div>
                     
                     <div className="flex items-start gap-3">
-                      <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
+                      <div className="w-2 h-2 bg-purple-500 rounded-full mt-2 flex-shrink-0"></div>
                       <div>
                         <h4 className="font-medium">Real-time Toxicity Analysis</h4>
                         <p className="text-sm text-gray-600 dark:text-gray-400">
@@ -172,7 +201,7 @@ export default function CourseReviewDemo() {
                     </div>
                     
                     <div className="flex items-start gap-3">
-                      <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
+                      <div className="w-2 h-2 bg-purple-500 rounded-full mt-2 flex-shrink-0"></div>
                       <div>
                         <h4 className="font-medium">Integrated Review Display</h4>
                         <p className="text-sm text-gray-600 dark:text-gray-400">
@@ -186,7 +215,7 @@ export default function CourseReviewDemo() {
                 {/* How It Works */}
                 <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
                   <div className="flex items-center gap-2 mb-4">
-                    <BookOpen className="w-5 h-5 text-blue-500" />
+                    <BookOpen className="w-5 h-5 text-purple-500" />
                     <h3 className="text-xl font-semibold text-gray-900 dark:text-white">How It Works</h3>
                   </div>
                   <div className="space-y-4">
@@ -216,7 +245,7 @@ export default function CourseReviewDemo() {
               </div>
 
               {/* Call to Action */}
-              <div className="text-center bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30 rounded-lg p-8">
+              <div className="text-center bg-gradient-to-r from-purple-50 to-purple-100 dark:from-purple-950/30 dark:to-purple-900/30 rounded-lg p-8">
                 <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
                   Ready to Try the Review System?
                 </h3>
@@ -256,7 +285,7 @@ export default function CourseReviewDemo() {
                 </p>
               </div>
               
-              <CourseReviewForm />
+              <CourseReviewForm onReviewSubmitted={refreshReviewCount} />
             </div>
           )}
 
@@ -275,34 +304,73 @@ export default function CourseReviewDemo() {
               {/* University Selection */}
               <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
                 <div className="flex items-center gap-2 mb-4">
-                  <Users className="w-5 h-5 text-blue-500" />
+                  <Users className="w-5 h-5 text-purple-500" />
                   <h3 className="text-xl font-semibold text-gray-900 dark:text-white">Select University to View All Courses & Reviews</h3>
                 </div>
                 <p className="text-gray-600 dark:text-gray-400 mb-6">
                   Choose a university to see all available degree programs and their student reviews
                 </p>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  {universities.map((uni) => (
-                    <button
-                      key={uni.shortName}
-                      onClick={() => {
-                        setSelectedUniversity(uni.shortName);
-                        setSelectedCourse(courses.find(c => c.university === uni.shortName) || courses[0]);
-                      }}
-                      className={`justify-start h-auto p-6 hover:scale-105 transition-transform rounded-lg border-2 ${
-                        selectedUniversity === uni.shortName
-                          ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
-                          : 'border-gray-200 dark:border-gray-600 hover:border-blue-300 dark:hover:border-blue-600'
-                      }`}
-                    >
-                      <div className="text-left">
-                        <div className="font-medium text-lg">{uni.name}</div>
-                        <div className="text-sm text-gray-500 mt-1">
-                          {courses.filter(c => c.university === uni.shortName).length} Degree Programs
+                  {universities.map((uni) => {
+                    const getUniversityTheme = (shortName: string) => {
+                      if (shortName === 'Wits') {
+                        return {
+                          bg: 'bg-blue-50 dark:bg-blue-900/20',
+                          border: 'border-blue-200 dark:border-blue-700',
+                          selectedBg: 'bg-blue-100 dark:bg-blue-800/30',
+                          selectedBorder: 'border-blue-500 dark:border-blue-400',
+                          hoverBorder: 'hover:border-blue-300 dark:hover:border-blue-600'
+                        };
+                      } else if (shortName === 'UJ') {
+                        return {
+                          bg: 'bg-orange-50 dark:bg-orange-900/20',
+                          border: 'border-orange-200 dark:border-orange-700',
+                          selectedBg: 'bg-orange-100 dark:bg-orange-800/30',
+                          selectedBorder: 'border-orange-500 dark:border-orange-400',
+                          hoverBorder: 'hover:border-orange-300 dark:hover:border-orange-600'
+                        };
+                      } else if (shortName === 'UP') {
+                        return {
+                          bg: 'bg-red-50 dark:bg-red-900/20',
+                          border: 'border-red-200 dark:border-red-700',
+                          selectedBg: 'bg-red-100 dark:bg-red-800/30',
+                          selectedBorder: 'border-red-500 dark:border-red-400',
+                          hoverBorder: 'hover:border-red-300 dark:hover:border-red-600'
+                        };
+                      }
+                      return {
+                        bg: 'bg-gray-50 dark:bg-gray-800',
+                        border: 'border-gray-200 dark:border-gray-600',
+                        selectedBg: 'bg-gray-100 dark:bg-gray-700',
+                        selectedBorder: 'border-gray-500 dark:border-gray-400',
+                        hoverBorder: 'hover:border-gray-300 dark:hover:border-gray-600'
+                      };
+                    };
+                    
+                    const theme = getUniversityTheme(uni.shortName);
+                    
+                    return (
+                      <button
+                        key={uni.shortName}
+                        onClick={() => {
+                          setSelectedUniversity(uni.shortName);
+                          setSelectedCourse(courses.find(c => c.university === uni.shortName) || courses[0]);
+                        }}
+                        className={`justify-start h-auto p-6 hover:scale-105 transition-all duration-200 rounded-lg border-2 ${
+                          selectedUniversity === uni.shortName
+                            ? `${theme.selectedBg} ${theme.selectedBorder}`
+                            : `${theme.bg} ${theme.border} ${theme.hoverBorder}`
+                        }`}
+                      >
+                        <div className="text-left">
+                          <div className="font-medium text-lg">{uni.name}</div>
+                          <div className="text-sm text-gray-500 mt-1">
+                            {courses.filter(c => c.university === uni.shortName).length} Degree Programs
+                          </div>
                         </div>
-                      </div>
-                    </button>
-                  ))}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
 
@@ -310,7 +378,7 @@ export default function CourseReviewDemo() {
               {selectedUniversity && (
                 <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
                   <div className="flex items-center gap-2 mb-4">
-                    <BookOpen className="w-5 h-5 text-blue-500" />
+                    <BookOpen className={`w-5 h-5 ${getUniversityIconColor(selectedUniversity)}`} />
                     <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
                       All Courses at {universities.find(u => u.shortName === selectedUniversity)?.name}
                     </h3>
@@ -380,10 +448,10 @@ export default function CourseReviewDemo() {
 
               {/* Individual Course Detail View */}
               <div id="course-detail-view" className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-                <div className="flex items-center gap-2 mb-4">
-                  <Star className="w-5 h-5 text-blue-500" />
-                  <h3 className="text-xl font-semibold text-gray-900 dark:text-white">Course Detail View</h3>
-                </div>
+                                  <div className="flex items-center gap-2 mb-4">
+                    <Star className={`w-5 h-5 ${getUniversityIconColor(selectedCourse.university)}`} />
+                    <h3 className="text-xl font-semibold text-gray-900 dark:text-white">Course Detail View</h3>
+                  </div>
                 <p className="text-gray-600 dark:text-gray-400 mb-6">
                   Detailed view of a specific course with comprehensive information
                 </p>
@@ -391,7 +459,7 @@ export default function CourseReviewDemo() {
                   {/* Course Info Card */}
                   <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-6">
                     <div className="flex items-center gap-2 mb-4">
-                      <BookOpen className="w-5 h-5 text-blue-500" />
+                      <BookOpen className={`w-5 h-5 ${getUniversityIconColor(selectedCourse.university)}`} />
                       <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{selectedCourse.courseName}</h3>
                     </div>
                     <p className="text-gray-600 dark:text-gray-400 mb-4">
