@@ -26,15 +26,26 @@ jobs:
           npm install
           npm run build --if-present
 
-      - name: Zip backend for deployment
+      - name: Prepare deployment package
         working-directory: ./backend
-        run: zip -r ../backend.zip .
+        run: |
+          # Create deployment folder
+          mkdir -p ../deploy
+          # Copy package files
+          cp package.json package-lock.json ../deploy/
+          # Copy build output (adjust 'dist' if your build folder is different)
+          cp -r dist ../deploy/
+
+      - name: Zip deployment folder
+        run: |
+          cd deploy
+          zip -r ../deploy.zip .
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
           name: node-app
-          path: backend.zip
+          path: deploy.zip
 
   deploy:
     runs-on: ubuntu-latest
@@ -61,4 +72,4 @@ jobs:
         with:
           app-name: 'ilostit'
           slot-name: 'Production'
-          package: ./backend.zip
+          package: ./deploy.zip
