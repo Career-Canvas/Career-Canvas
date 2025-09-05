@@ -418,7 +418,7 @@ export default function CourseReviewForm({ preSelectedUniversity, preSelectedCou
               disabled={isSubmitting || !aiTestPassed}
               className={`px-8 py-3 font-semibold rounded-lg transition-colors flex items-center gap-2 ${
                 aiTestPassed 
-                  ? 'bg-blue-600 hover:bg-blue-700 text-white' 
+                  ? 'bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white' 
                   : 'bg-gray-400 text-gray-200 cursor-not-allowed'
               }`}
             >

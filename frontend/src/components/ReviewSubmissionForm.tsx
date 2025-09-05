@@ -307,7 +307,7 @@ export default function ReviewSubmissionForm({ universityName, onReviewSubmitted
           type="button"
           onClick={handleSubmit}
           disabled={isSubmitting || !formData.reviewText.trim() || !formData.author.trim() || !isEmailValid}
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+          className="w-full bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white"
         >
           {isSubmitting ? (
             <>

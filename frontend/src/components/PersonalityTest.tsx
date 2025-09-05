@@ -261,7 +261,7 @@ const PersonalityTest = ({ onPersonalityDetermined }: PersonalityTestProps) => {
   return (
     <Card className="shadow-card hover:shadow-card-hover transition-all duration-300">
       <CardHeader className="bg-gradient-card rounded-t-lg">
-        <CardTitle className="flex items-center gap-2 text-academic-blue">
+        <CardTitle className="flex items-center gap-2 text-purple-600 dark:text-purple-400">
           <Brain className="w-6 h-6" />
           Personality Assessment
         </CardTitle>
@@ -302,7 +302,7 @@ const PersonalityTest = ({ onPersonalityDetermined }: PersonalityTestProps) => {
             <div className="mb-6">
               <div className="flex justify-between items-center mb-2">
                 <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Progress</span>
-                <span className="text-sm font-semibold text-academic-blue">{Math.round(progress)}%</span>
+                <span className="text-sm font-semibold text-purple-600 dark:text-purple-400">{Math.round(progress)}%</span>
               </div>
               <Progress value={progress} />
               <p className="text-center text-xs text-gray-500 dark:text-gray-400 mt-2">Page {currentPage} of {totalPages}</p>
@@ -312,7 +312,7 @@ const PersonalityTest = ({ onPersonalityDetermined }: PersonalityTestProps) => {
               {currentQuestions.map((question, index) => (
                 <div key={question.id} className="space-y-4">
                   <div className="flex items-start gap-3">
-                    <span className="flex-shrink-0 w-8 h-8 bg-academic-blue text-white rounded-full flex items-center justify-center text-sm font-semibold">
+                    <span className="flex-shrink-0 w-8 h-8 bg-gradient-to-r from-purple-600 to-purple-700 text-white rounded-full flex items-center justify-center text-sm font-semibold">
                       {startIndex + index + 1}
                     </span>
                     <h3 className="font-medium text-gray-900 dark:text-white leading-6">{question.question}</h3>
@@ -328,7 +328,7 @@ const PersonalityTest = ({ onPersonalityDetermined }: PersonalityTestProps) => {
                         <RadioGroupItem value={option.value} id={`${question.id}-${option.value}`} />
                         <Label 
                           htmlFor={`${question.id}-${option.value}`}
-                          className="text-sm leading-5 cursor-pointer hover:text-academic-blue transition-colors"
+                          className="text-sm leading-5 cursor-pointer hover:text-purple-600 dark:hover:text-purple-400 transition-colors"
                         >
                           {option.label}
                         </Label>
@@ -358,7 +358,7 @@ const PersonalityTest = ({ onPersonalityDetermined }: PersonalityTestProps) => {
                  <Button 
                   onClick={calculatePersonalityType}
                   disabled={!isPageComplete}
-                  className="w-full bg-warm-accent hover:bg-warm-accent/90 text-white shadow-button transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:hover:scale-100"
+                  className="w-full bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white shadow-button transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:hover:scale-100"
                   size="lg"
                 >
                   <Brain className="w-5 h-5 mr-2" />
