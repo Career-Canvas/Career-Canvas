@@ -25,13 +25,18 @@ jobs:
         run: npm install
 
       - name: Prepare deployment package
-        working-directory: ./backend
         run: |
-          mkdir -p ../deploy
-          # Copy package files
-          cp package.json package-lock.json ../deploy/
-          # Copy all source files (adjust if you want to exclude dev files)
-          cp -r * ../deploy/
+          # Create a clean deployment folder
+          mkdir deploy
+          
+          # Copy only necessary files for runtime
+          cp backend/package.json backend/package-lock.json deploy/
+          cp backend/*.js deploy/  # entry point(s)
+          
+          # Copy other runtime folders if they exist
+          [ -d backend/routes ] && cp -r backend/routes deploy/
+          [ -d backend/public ] && cp -r backend/public deploy/
+          [ -d backend/views ] && cp -r backend/views deploy/
 
       - name: Zip deployment folder
         run: |
