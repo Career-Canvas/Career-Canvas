@@ -26,9 +26,6 @@ jobs:
           npm ci
           npm run build --if-present
 
-      # --- CHANGE ---
-      # The zip command now EXCLUDES the node_modules folder.
-      # Azure will run 'npm install' on its side based on your package.json.
       - name: Zip artifact for deployment
         working-directory: ./backend
         run: zip -r ../backend.zip . -x "node_modules/*"
@@ -64,4 +61,7 @@ jobs:
           app-name: 'ilostit'
           slot-name: 'Production'
           package: backend.zip
-          startup-command: 'node dist/server.js' # Make sure this path is correct for your build output
+          # --- CHANGE ---
+          # Corrected the startup command to point directly to server.js
+          startup-command: 'node server.js'
+
