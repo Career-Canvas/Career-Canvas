@@ -1,6 +1,3 @@
-# Docs for Azure Web Apps Deploy: https://github.com/Azure/webapps-deploy
-# More GitHub Actions for Azure: https://github.com/Azure/actions
-
 name: Build and deploy Node.js app to Azure Web App - ilostit
 
 on:
@@ -12,42 +9,51 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      - name: Set up Node.js version
-        uses: actions/setup-node@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
         with:
           node-version: '22.x'
-          cache: 'npm'
-          cache-dependency-path: ./backend/package-lock.json
 
-      - name: Install dependencies and build
+      - name: Install dependencies
         working-directory: ./backend
         run: |
-          npm ci
+          npm install
+
+      - name: Build (if needed)
+        working-directory: ./backend
+        run: |
           npm run build --if-present
 
-      - name: Zip artifact for deployment
-        working-directory: ./backend
-        run: zip -r ../backend.zip . -x "node_modules/*"
+      - name: Prepare deployment package
+        run: |
+          mkdir deploy
+          cp -r backend/package*.json deploy/
+          cp -r backend/node_modules deploy/
+          cp backend/server.js deploy/
+          # If you have other files (config, public, etc.), copy them too
+          # cp -r backend/public deploy/
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
           name: node-app
-          path: backend.zip
+          path: deploy/
 
   deploy:
     runs-on: ubuntu-latest
     needs: build
+    permissions:
+      id-token: write
+      contents: read
     environment:
       name: 'Production'
-      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
-    
-    permissions:
-      id-token: write # Required for login with secrets
 
     steps:
       - name: Download artifact from build job
@@ -58,26 +64,14 @@ jobs:
       - name: Login to Azure
         uses: azure/login@v2
         with:
-          # Use your Azure credentials stored in GitHub secrets
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_729C6289EE8F4305BA306D677F509DFD }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_8B3DDF039A474783B4280461C1164F77 }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_F5D90908DD5A4A2C9D240B7B6B1675CD }}
 
-      - name: 'Deploy to Azure Web App'
+      - name: Deploy to Azure Web App
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
         with:
           app-name: 'ilostit'
           slot-name: 'Production'
-          package: backend.zip
-          # --- FIX 1: Corrected startup command ---
-          startup-command: 'node server.js'
-          # --- FIX 2: Added app settings from secrets (Best Practice) ---
-          # This automatically sets your environment variables in Azure.
-          # You must create these secrets in your GitHub repository settings.
-          app-settings-json: |
-            [
-                { "name": "SUPABASE_URL", "value": "${{ secrets.SUPABASE_URL }}", "slotSetting": false },
-                { "name": "SUPABASE_ANON_KEY", "value": "${{ secrets.SUPABASE_ANON_KEY }}", "slotSetting": false },
-                { "name": "GOOGLE_PERSPECTIVE_API_KEY", "value": "${{ secrets.GOOGLE_PERSPECTIVE_API_KEY }}", "slotSetting": false },
-                { "name": "SCM_DO_BUILD_DURING_DEPLOYMENT", "value": "true", "slotSetting": false }
-            ]
-
+          package: deploy/
